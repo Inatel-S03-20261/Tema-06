@@ -1,0 +1,183 @@
+@startuml
+hide footbox
+skinparam maxmessagesize 150
+autonumber
+
+actor "Admin" as Admin
+participant "LoginPage" as Login
+participant "AuthService" as Auth
+participant "DashboardPage" as Dashboard
+participant "PlayerPage" as PlayerPage
+participant "PlayerDetailComponent" as PlayerDetail
+participant "CardsPage" as CardsPage
+participant "TradePage" as TradePage
+
+participant "PlayerService" as PService
+participant "CardService" as CService
+participant "TradeService" as TService
+
+actor "Jogadores" as Jogadores #LightGreen
+actor "Cartas" as Cartas #LightSkyBlue
+actor "Trocas" as Trocas #LightCoral
+
+== Autenticação ==
+Admin -> Login : Acessa sistema enviando credenciais/token
+activate Login
+Login -> Auth : autenticar(credenciais/token)
+activate Auth
+
+Auth -> Jogadores : validarCredenciais(credenciais/token)
+activate Jogadores
+Jogadores --> Auth : Resultado da validação
+deactivate Jogadores
+
+alt Credenciais / Token Válidos
+    Auth --> Login : Autenticação com sucesso (Token OK)
+    Login -> Dashboard : Redireciona para o Dashboard
+    deactivate Login
+else Inválido ou Expirado
+    Auth --> Login : Erro de Autenticação (401 Unauthorized)
+    activate Login
+    Login --> Admin : Exibe mensagem de erro e pede novo login
+    deactivate Login
+end
+deactivate Auth
+
+
+== Acesso ao Dashboard Geral ==
+Admin -> Dashboard : Interage com a aplicação
+activate Dashboard
+Dashboard --> Admin : Exibe opções de navegação (Jogadores, Trocas, Cartas)
+deactivate Dashboard
+
+== Gestão de Jogadores (PlayerPage) ==
+Admin -> Dashboard : navegarParaJogadores()
+activate Dashboard
+Dashboard -> PlayerPage : Redireciona para página de Jogadores
+deactivate Dashboard
+activate PlayerPage
+
+PlayerPage -> PlayerPage : carregarJogadores()
+PlayerPage -> PService : buscarTodos()
+activate PService
+PService -> Jogadores : Query para buscar lista de jogadores
+activate Jogadores
+Jogadores --> PService : Retorna Player[] (Dados básicos)
+deactivate Jogadores
+PService --> PlayerPage : Retorna Player[]
+deactivate PService
+PlayerPage --> Admin : Exibe lista de jogadores
+
+opt Filtrar Jogadores
+    Admin -> PlayerPage : filtrarPorNome(nome)
+    PlayerPage --> Admin : Exibe lista filtrada
+end
+
+opt Ações em Lote: Banir / Desbanir / Promover
+    Admin -> PlayerPage : selecionarJogadores(id)
+    Admin -> PlayerPage : banirSelecionados() / promoverAdmin(id)
+    PlayerPage -> PService : banirLote(ids) / (promover usuário)
+    activate PService
+    PService -> Jogadores : Atualiza registros
+    activate Jogadores
+    Jogadores --> PService : Confirmação (OK)
+    deactivate Jogadores
+    PService --> PlayerPage : Retorna sucesso
+    deactivate PService
+    PlayerPage --> Admin : Feedback visual de sucesso
+end
+
+== Detalhes do Jogador (PlayerDetailComponent) ==
+Admin -> PlayerPage : abrirDetalhe(id)
+PlayerPage -> PlayerDetail : Inicializa componente com ID
+deactivate PlayerPage
+activate PlayerDetail
+
+PlayerDetail -> PlayerDetail : carregarPerfil(id)
+PlayerDetail -> PService : buscarPorId(id)
+activate PService
+PService -> Jogadores : Query de dados completos
+activate Jogadores
+Jogadores --> PService : Retorna Player (Dados completos)
+deactivate Jogadores
+PService --> PlayerDetail : Retorna objeto Player
+deactivate PService
+
+PlayerDetail -> PlayerDetail : carregarCartas(id) \ncarregarTrocas(id)
+PlayerDetail -> CService : (Busca cartas do jogador)
+activate CService
+CService -> Cartas : Query de cartas associadas
+activate Cartas
+Cartas --> CService : Retorna Card[]
+deactivate Cartas
+CService --> PlayerDetail : Lista de cartas do jogador
+deactivate CService
+
+PlayerDetail --> Admin : Exibe perfil completo, cartas possuídas e histórico
+deactivate PlayerDetail
+
+== Gestão de Cartas (CardsPage) ==
+Admin -> Dashboard : navegarParaCartas()
+activate Dashboard
+Dashboard -> CardsPage : Redireciona para página de Cartas
+deactivate Dashboard
+activate CardsPage
+
+CardsPage -> CardsPage : carregarCartas()
+CardsPage -> CService : buscarCartas()
+activate CService
+CService -> Cartas : Query para listar catálogo
+activate Cartas
+Cartas --> CService : Retorna Card[]
+deactivate Cartas
+CService --> CardsPage : Lista de cartas
+deactivate CService
+CardsPage --> Admin : Exibe listagem geral de cartas
+
+opt Filtrar Cartas
+    Admin -> CardsPage : filtrarPorTipo(tipo)
+    CardsPage -> CService : buscarPorTipo()
+    activate CService
+    CService -> Cartas : Query com filtro
+    activate Cartas
+    Cartas --> CService : Retorna Card[] filtrados
+    deactivate Cartas
+    CService --> CardsPage : Lista atualizada
+    deactivate CService
+    CardsPage --> Admin : Exibe cartas filtradas
+end
+deactivate CardsPage
+
+== Gestão de Trocas (TradePage) ==
+Admin -> Dashboard : navegarParaTrocas()
+activate Dashboard
+Dashboard -> TradePage : Redireciona para página de Trocas
+deactivate Dashboard
+activate TradePage
+
+TradePage -> TradePage : carregarAbertas()
+TradePage -> TService : buscarAbertas()
+activate TService
+TService -> Trocas : Query de trocas em aberto
+activate Trocas
+Trocas --> TService : Retorna Trade[] (Dados básicos)
+deactivate Trocas
+TService --> TradePage : Lista de trocas
+deactivate TService
+TradePage --> Admin : Exibe trocas em aberto
+
+opt Consultar Histórico / Propostas
+    Admin -> TradePage : carregarFinalizadas() / carregarPropostas()
+    TradePage -> TService : buscarTrocas() / buscarPorId()
+    activate TService
+    TService -> Trocas : Query específica
+    activate Trocas
+    Trocas --> TService : Retorna Trade[] detalhado
+    deactivate Trocas
+    TService --> TradePage : Dados da troca atualizados
+    deactivate TService
+    TradePage --> Admin : Exibe histórico ou detalhes da proposta
+end
+
+deactivate TradePage
+@enduml
