@@ -1,7 +1,7 @@
 # 🛡️ Painel de Administração (Aplicação 6)
 Responsável por administrar a posse de cartas na plataforma. Deve fornecer um painel administrativo com as informações dos jogadores e as cartas que eles possuem, além das trocas em aberto, propostas realizadas e histórico de trocas finalizadas.
 
-# ⚙️ Funcionalidades
+# Funcionalidades
 Acesso Restrito: Login seguro e exclusivo para os administradores da plataforma.
 
 Gestão de Jogadores: Listagem e busca de usuários, permitindo banir, desbanir ou promovê-los a administrador.
@@ -17,3 +17,9 @@ Acompanhamento em tempo real das trocas que estão em aberto.
 Visualização dos detalhes das propostas realizadas (jogadores envolvidos e cartas ofertadas).
 
 Histórico completo com o registro das trocas já finalizadas.
+
+# Diagramas
+
+![diagrama-casos-de-uso-S03](https://github.com/user-attachments/assets/4b535495-89a1-4f1a-8671-bff73af74368)
+![diagrama-classes-S03](https://github.com/user-attachments/assets/9140fcc7-7ae9-49b7-bad7-50706fa1e838)
+<img width="1906" height="2985" alt="diagrama-sequencia-S03 drawio" src="https://github.com/user-attachments/assets/e74cefa5-7341-4fc1-a455-dadbf8019a32" />
