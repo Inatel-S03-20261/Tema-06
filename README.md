@@ -14,5 +14,5 @@ Responsável por administrar a posse de cartas na plataforma. Deve fornecer um p
 # Diagramas
 
 ![diagrama-casos-de-uso-S03](https://github.com/user-attachments/assets/4b535495-89a1-4f1a-8671-bff73af74368)
-![diagrama-classes-S03](https://github.com/user-attachments/assets/9140fcc7-7ae9-49b7-bad7-50706fa1e838)
+![diagrama-classes-S03](https://raw.githubusercontent.com/Inatel-S03-20261/Tema-06/refs/heads/main/Diagramas/diagrama-classes-S03.jpeg?token=GHSAT0AAAAAAD3X6YW3OCB2HKO3WPJ5SNVU2P2PGQA)
 <img width="1906" height="2985" alt="diagrama-sequencia-S03 drawio" src="https://github.com/user-attachments/assets/e74cefa5-7341-4fc1-a455-dadbf8019a32" />
