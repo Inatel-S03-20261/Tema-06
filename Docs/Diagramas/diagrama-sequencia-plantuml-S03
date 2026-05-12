@@ -1,183 +1,155 @@
 @startuml
-hide footbox
-skinparam maxmessagesize 150
+skinparam maxMessageSize 200
 autonumber
 
-actor "Admin" as Admin
-participant "LoginPage" as Login
-participant "AuthService" as Auth
-participant "DashboardPage" as Dashboard
-participant "PlayerPage" as PlayerPage
-participant "PlayerDetailComponent" as PlayerDetail
-participant "CardsPage" as CardsPage
-participant "TradePage" as TradePage
+actor "Admin" as admin
 
-participant "PlayerService" as PService
-participant "CardService" as CService
-participant "TradeService" as TService
+box "Frontend" #LightCyan
+boundary "LoginPage" as loginPage
+boundary "DashboardPage" as dashPage
+boundary "PlayerPage" as playerPage
+boundary "PlayerDetailComponent" as playerDetail
+boundary "CardsPage" as cardsPage
+boundary "TradePage" as tradePage
+end box
 
-actor "Jogadores" as Jogadores #LightGreen
-actor "Cartas" as Cartas #LightSkyBlue
-actor "Trocas" as Trocas #LightCoral
+box "Controllers" #LightYellow
+control "AuthController" as authCtrl
+control "PlayerController" as playerCtrl
+control "CardController" as cardCtrl
+control "TradeController" as tradeCtrl
+end box
 
-== Autenticação ==
-Admin -> Login : Acessa sistema enviando credenciais/token
-activate Login
-Login -> Auth : autenticar(credenciais/token)
-activate Auth
+box "Services" #LightGreen
+entity "AuthService" as authSvc
+entity "PlayerService" as playerSvc
+entity "CardService" as cardSvc
+entity "TradeService" as tradeSvc
+end box
 
-Auth -> Jogadores : validarCredenciais(credenciais/token)
-activate Jogadores
-Jogadores --> Auth : Resultado da validação
-deactivate Jogadores
+actor "Jogadores" as actorJogadores #CornflowerBlue
+actor "Cartas" as actorCartas #LightSalmon
+actor "Trocas" as actorTrocas #LightSteelBlue
 
-alt Credenciais / Token Válidos
-    Auth --> Login : Autenticação com sucesso (Token OK)
-    Login -> Dashboard : Redireciona para o Dashboard
-    deactivate Login
-else Inválido ou Expirado
-    Auth --> Login : Erro de Autenticação (401 Unauthorized)
-    activate Login
-    Login --> Admin : Exibe mensagem de erro e pede novo login
-    deactivate Login
+== 1. Fluxo de Autenticação ==
+admin -> loginPage: login(token: string)
+activate loginPage
+loginPage -> authCtrl: validarToken(token: string)
+activate authCtrl
+authCtrl -> authSvc: verificarToken(token: string)
+activate authSvc
+authSvc -> authSvc: estaAutenticado()
+authSvc --> authCtrl: boolean
+deactivate authSvc
+authCtrl --> loginPage: status
+deactivate authCtrl
+
+alt Autenticado
+    loginPage -> dashPage: redireciona
+    activate dashPage
+    dashPage -> dashPage: verificarAcesso()
+else Falha
+    loginPage --> admin: Exibe erro
 end
-deactivate Auth
+deactivate loginPage
 
+== 2. Gestão de Jogadores (PlayerPage) ==
+admin -> dashPage: navegarParaJogadores()
+dashPage -> playerPage: abrir
+deactivate dashPage
+activate playerPage
 
-== Acesso ao Dashboard Geral ==
-Admin -> Dashboard : Interage com a aplicação
-activate Dashboard
-Dashboard --> Admin : Exibe opções de navegação (Jogadores, Trocas, Cartas)
-deactivate Dashboard
+playerPage -> playerPage: carregarJogadores()
+playerPage -> playerCtrl: buscarJogadores(nome?: string)
+activate playerCtrl
+playerCtrl -> playerSvc: buscarTodos()
+activate playerSvc
+playerSvc -> actorJogadores: Query: listar todos
+actorJogadores --> playerSvc: Player[]
+playerSvc --> playerCtrl: Player[]
+deactivate playerSvc
+playerCtrl --> playerPage: Player[]
+deactivate playerCtrl
 
-== Gestão de Jogadores (PlayerPage) ==
-Admin -> Dashboard : navegarParaJogadores()
-activate Dashboard
-Dashboard -> PlayerPage : Redireciona para página de Jogadores
-deactivate Dashboard
-activate PlayerPage
+opt Ações Administrativas (Banir/Promover)
+    admin -> playerPage: atualizarBanimento(id, statusBanimento: bool)
+    playerPage -> playerCtrl: atualizarStatusBanimento(id, statusBanimento)
+    activate playerCtrl
+    playerCtrl -> playerSvc: atualizarBanimento(id, statusBanimento)
+    activate playerSvc
+    playerSvc -> actorJogadores: UPDATE Player status
+    actorJogadores --> playerSvc: sucesso
+    playerSvc --> playerCtrl: confirmação
+    deactivate playerSvc
+    playerCtrl --> playerPage: feedback
+    deactivate playerCtrl
 
-PlayerPage -> PlayerPage : carregarJogadores()
-PlayerPage -> PService : buscarTodos()
-activate PService
-PService -> Jogadores : Query para buscar lista de jogadores
-activate Jogadores
-Jogadores --> PService : Retorna Player[] (Dados básicos)
-deactivate Jogadores
-PService --> PlayerPage : Retorna Player[]
-deactivate PService
-PlayerPage --> Admin : Exibe lista de jogadores
-
-opt Filtrar Jogadores
-    Admin -> PlayerPage : filtrarPorNome(nome)
-    PlayerPage --> Admin : Exibe lista filtrada
-end
-
-opt Ações em Lote: Banir / Desbanir / Promover
-    Admin -> PlayerPage : selecionarJogadores(id)
-    Admin -> PlayerPage : banirSelecionados() / promoverAdmin(id)
-    PlayerPage -> PService : banirLote(ids) / (promover usuário)
-    activate PService
-    PService -> Jogadores : Atualiza registros
-    activate Jogadores
-    Jogadores --> PService : Confirmação (OK)
-    deactivate Jogadores
-    PService --> PlayerPage : Retorna sucesso
-    deactivate PService
-    PlayerPage --> Admin : Feedback visual de sucesso
-end
-
-== Detalhes do Jogador (PlayerDetailComponent) ==
-Admin -> PlayerPage : abrirDetalhe(id)
-PlayerPage -> PlayerDetail : Inicializa componente com ID
-deactivate PlayerPage
-activate PlayerDetail
-
-PlayerDetail -> PlayerDetail : carregarPerfil(id)
-PlayerDetail -> PService : buscarPorId(id)
-activate PService
-PService -> Jogadores : Query de dados completos
-activate Jogadores
-Jogadores --> PService : Retorna Player (Dados completos)
-deactivate Jogadores
-PService --> PlayerDetail : Retorna objeto Player
-deactivate PService
-
-PlayerDetail -> PlayerDetail : carregarCartas(id) \ncarregarTrocas(id)
-PlayerDetail -> CService : (Busca cartas do jogador)
-activate CService
-CService -> Cartas : Query de cartas associadas
-activate Cartas
-Cartas --> CService : Retorna Card[]
-deactivate Cartas
-CService --> PlayerDetail : Lista de cartas do jogador
-deactivate CService
-
-PlayerDetail --> Admin : Exibe perfil completo, cartas possuídas e histórico
-deactivate PlayerDetail
-
-== Gestão de Cartas (CardsPage) ==
-Admin -> Dashboard : navegarParaCartas()
-activate Dashboard
-Dashboard -> CardsPage : Redireciona para página de Cartas
-deactivate Dashboard
-activate CardsPage
-
-CardsPage -> CardsPage : carregarCartas()
-CardsPage -> CService : buscarCartas()
-activate CService
-CService -> Cartas : Query para listar catálogo
-activate Cartas
-Cartas --> CService : Retorna Card[]
-deactivate Cartas
-CService --> CardsPage : Lista de cartas
-deactivate CService
-CardsPage --> Admin : Exibe listagem geral de cartas
-
-opt Filtrar Cartas
-    Admin -> CardsPage : filtrarPorTipo(tipo)
-    CardsPage -> CService : buscarPorTipo()
-    activate CService
-    CService -> Cartas : Query com filtro
-    activate Cartas
-    Cartas --> CService : Retorna Card[] filtrados
-    deactivate Cartas
-    CService --> CardsPage : Lista atualizada
-    deactivate CService
-    CardsPage --> Admin : Exibe cartas filtradas
-end
-deactivate CardsPage
-
-== Gestão de Trocas (TradePage) ==
-Admin -> Dashboard : navegarParaTrocas()
-activate Dashboard
-Dashboard -> TradePage : Redireciona para página de Trocas
-deactivate Dashboard
-activate TradePage
-
-TradePage -> TradePage : carregarAbertas()
-TradePage -> TService : buscarAbertas()
-activate TService
-TService -> Trocas : Query de trocas em aberto
-activate Trocas
-Trocas --> TService : Retorna Trade[] (Dados básicos)
-deactivate Trocas
-TService --> TradePage : Lista de trocas
-deactivate TService
-TradePage --> Admin : Exibe trocas em aberto
-
-opt Consultar Histórico / Propostas
-    Admin -> TradePage : carregarFinalizadas() / carregarPropostas()
-    TradePage -> TService : buscarTrocas() / buscarPorId()
-    activate TService
-    TService -> Trocas : Query específica
-    activate Trocas
-    Trocas --> TService : Retorna Trade[] detalhado
-    deactivate Trocas
-    TService --> TradePage : Dados da troca atualizados
-    deactivate TService
-    TradePage --> Admin : Exibe histórico ou detalhes da proposta
+    admin -> playerPage: atualizarNivel(id: string)
+    playerPage -> playerCtrl: atualizarNivelUsuario(id: string)
+    activate playerCtrl
+    playerCtrl -> playerSvc: atualizarNivel(id, nivel)
+    activate playerSvc
+    playerSvc -> actorJogadores: UPDATE Player level
+    actorJogadores --> playerSvc: sucesso
+    playerSvc --> playerCtrl: confirmação
+    deactivate playerSvc
+    playerCtrl --> playerPage: feedback
+    deactivate playerCtrl
 end
 
-deactivate TradePage
+== 3. Detalhes e Inventário (PlayerDetailComponent) ==
+admin -> playerPage: abrirDetalhes(id: string)
+playerPage -> playerDetail: inicializar(id)
+activate playerDetail
+
+par 
+    playerDetail -> playerDetail: carregarPerfil(id)
+    playerDetail -> playerCtrl: buscarJogadores(id)
+    playerCtrl -> playerSvc: buscarPorNome(id)
+    playerSvc -> actorJogadores: Fetch detalhado
+    actorJogadores --> playerSvc: Player
+
+    playerDetail -> playerDetail: carregarCartas(id)
+    playerDetail -> cardCtrl: buscarCartas(id_usuario)
+    cardCtrl -> cardSvc: buscarCartas()
+    cardSvc -> actorCartas: Query: inventário do player
+    actorCartas --> cardSvc: Card[]
+
+    playerDetail -> playerDetail: carregarTrocas(id)
+    playerDetail -> tradeCtrl: buscarTrocas(id_usuario)
+    tradeCtrl -> tradeSvc: buscarTrocas()
+    tradeSvc -> actorTrocas: Query: histórico do player
+    actorTrocas --> tradeSvc: Trade[]
+end
+deactivate playerDetail
+
+== 4. Listagem Geral de Cartas (CardsPage) ==
+admin -> dashPage: navegarParaCartas()
+activate cardsPage
+cardsPage -> cardCtrl: buscarCartas(nome?, tipo?)
+activate cardCtrl
+cardCtrl -> cardSvc: buscarPorTipo(tipo)
+activate cardSvc
+cardSvc -> actorCartas: Query: lista filtrada
+actorCartas --> cardSvc: Card[]
+deactivate cardSvc
+cardCtrl --> cardsPage: Card[]
+deactivate cardCtrl
+deactivate cardsPage
+
+== 5. Histórico de Trocas (TradePage) ==
+admin -> dashPage: navegarParaTrocas()
+activate tradePage
+tradePage -> tradePage: carregarTrocas()
+tradePage -> tradeCtrl: buscarTrocas(status?, card?: Card[])
+activate tradeCtrl
+tradeCtrl -> tradeSvc: buscarPorStatus(status)
+activate tradeSvc
+tradeSvc -> actorTrocas: Query: trocas por status
+actorTrocas --> tradeSvc: Trade[]
+deactivate tradeSvc
+tradeCtrl --> tradePage: Trade[]
+deactivate tradeCtrl
+deactivate tradePage
+
 @enduml
