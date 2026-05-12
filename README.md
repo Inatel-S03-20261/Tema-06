@@ -12,9 +12,13 @@ Responsável por administrar a posse de cartas na plataforma. Deve fornecer um p
   * Histórico completo com o registro das trocas já finalizadas.
 
 # Diagramas
-
+**Diagrama de caso de uso:**
 ![diagrama-casos-de-uso-S03](https://github.com/user-attachments/assets/4b535495-89a1-4f1a-8671-bff73af74368)
+
+**Diagrama de classes:**
 ![diagrama-classes-S03](./Docs/Diagramas/diagrama-classes-S03.jpg)
+
+**Diagrama de sequência:**
 <img width="1906" height="2985" alt="diagrama-sequencia-S03 drawio" src="https://github.com/user-attachments/assets/e74cefa5-7341-4fc1-a455-dadbf8019a32" />
 
 ## Princípios SOLID
