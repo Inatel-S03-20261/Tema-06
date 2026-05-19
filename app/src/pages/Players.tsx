@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { jogadoresMock } from "../services/playerService";
 import type { Player } from "../types/Player";
+import { Link } from "react-router-dom";
 
 const Players = () => {
     const [jogadores, setJogadores] = useState<Player[]>(jogadoresMock);
@@ -28,7 +29,7 @@ const Players = () => {
     return (
         <section className="pt-24 mx-8 md:mx-12 min-h-screen">
             <h1 className="text-4xl mb-6">Jogadores</h1>
-
+            
             <input
                 type="text"
                 placeholder="Filtrar por nome"
@@ -63,6 +64,12 @@ const Players = () => {
                     </div>
                 ))}
             </div>
+            <Link
+            to="/"
+            className="fixed bottom-6 right-6 bg-indigo-500 text-white px-4 py-3 rounded shadow"
+            >
+            Voltar para Home
+            </Link>
         </section>
     );
 };
