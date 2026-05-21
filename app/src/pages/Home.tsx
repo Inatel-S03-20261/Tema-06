@@ -1,17 +1,24 @@
-import { Link } from "react-router-dom";
+import ActionLink from "../components/ActionLink";
+import PageLayout from "../components/PageLayout";
 
 const Home = () => {
     return (
-        <section className="pt-24 mx-8 md:mx-12 min-h-screen flex flex-col">
-            <h1 className="text-4xl my-4">Bem-vindo, Administrador!</h1>
-
-            <Link
-                to="/jogadores"
-                className="bg-indigo-500 text-white px-4 py-2 rounded w-fit mt-4"
-            >
-                Ver jogadores
-            </Link>
-        </section>
+        <PageLayout title="Bem vindo ao painel de administração" className="text-center">
+            <div className="grid gap-4 md:grid-cols-2">
+                <ActionLink
+                    to="/jogadores"
+                    className="w-full h-32 p-6 text-xl font-semibold flex items-center justify-center"
+                >
+                    Dashboard de Jogadores
+                </ActionLink>
+                <ActionLink
+                    to="/trocas"
+                    className="w-full h-32 p-6 text-xl font-semibold flex items-center justify-center"
+                >
+                    Dashboard de Trocas
+                </ActionLink>
+            </div>
+        </PageLayout>
     );
 };
 
