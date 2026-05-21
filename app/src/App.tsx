@@ -3,11 +3,13 @@ import Home from "./pages/Home";
 import PlayerDetails from "./pages/PlayerDetails";
 import Players from "./pages/Players";
 import TradeDashboard from "./pages/Trades";
+import Login from "./pages/Login";
 
 const App = () => {
     return (
         <>
             <Routes>
+                <Route path="/login" element={<Login />} />
                 <Route path="/" element={<Home />} />
                 <Route path="/jogadores" element={<Players />} />
                 <Route
