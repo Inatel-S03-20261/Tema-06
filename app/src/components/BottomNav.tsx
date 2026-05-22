@@ -2,7 +2,7 @@ import { NavLink } from "react-router-dom";
 import {
     Home,
     Users,
-    Badge,
+    Layers,
     Swords,
     ArrowLeftRight,
 } from "lucide-react";
@@ -21,7 +21,7 @@ const navItems = [
     {
         label: "Cartas",
         to: "/cartas",
-        icon: Badge,
+        icon: Layers,
     },
     {
         label: "Batalhas",

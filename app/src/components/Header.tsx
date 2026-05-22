@@ -31,7 +31,7 @@ const Header = ({
                 />
 
                 <div className="flex flex-col">
-                    <strong className="text-red-500 tracking-[0.25em] text-sm font-bold">
+                    <strong className="font-orbitron text-red-500 tracking-[0.25em] text-sm font-bold">
                         POKÉDEX
                     </strong>
                     <span className="text-gray-500 text-xs tracking-[0.3em]">
