@@ -39,22 +39,19 @@ export const docsPlugin = fp(async function (app: FastifyInstance): Promise<void
       tags: [
         {
           name: 'auth',
-          description: 'Autenticação exclusiva para administradores da plataforma',
+          description: 'Admin authentication',
         },
         {
-          name: 'jogadores',
-          description:
-            'Gerenciamento de jogadores: listagem, busca, banimento/desbanimento e promoção a administrador',
+          name: 'players',
+          description: 'Player management — list, search, ban/unban, promote to admin',
         },
         {
-          name: 'cartas',
-          description:
-            'Catálogo de cartas disponíveis na plataforma, com suporte a filtro por tipo',
+          name: 'cards',
+          description: 'Card catalog — list and filter by type',
         },
         {
-          name: 'trocas',
-          description:
-            'Monitoramento de trocas: acompanhamento em tempo real de trocas abertas, propostas realizadas e histórico de trocas finalizadas',
+          name: 'trades',
+          description: 'Trade monitoring — open, proposed and completed trades',
         },
       ],
       components: {
