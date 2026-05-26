@@ -1,27 +1,33 @@
-# API — Estrutura SOA
+# API — Modular Architecture
 
-Backend orientado a serviços que consome APIs externas, mapeia dados para o frontend e persiste informações no banco de dados.
+Backend that persists data in the database and exposes it to the frontend via HTTP.
 
 ---
 
-## Estrutura de Diretórios
+## Directory Structure
 
 ```
 api/
 ├── src/
 │   ├── config/
-│   ├── controllers/
-│   ├── services/
-│   ├── repositories/
-│   ├── models/
-│   ├── dtos/
-│   │   ├── request/
-│   │   └── response/
-│   ├── adapters/
-│   ├── mappers/
-│   ├── middlewares/
-│   ├── utils/
-│   └── routes/
+│   │   └── database.ts
+│   ├── db/
+│   │   └── schema.ts
+│   ├── modules/
+│   │   ├── players/
+│   │   │   ├── players.schema.ts
+│   │   │   ├── players.repository.ts
+│   │   │   ├── players.service.ts
+│   │   │   ├── players.controller.ts
+│   │   │   └── players.routes.ts
+│   │   ├── cards/
+│   │   │   └── (same structure)
+│   │   └── trades/
+│   │       └── (same structure)
+│   ├── plugins/
+│   │   ├── docs.ts
+│   │   └── index.ts
+│   └── server.ts
 └── tests/
     ├── unit/
     └── integration/
@@ -29,57 +35,41 @@ api/
 
 ---
 
-## Responsabilidade de cada pasta
+## Folder Responsibilities
 
 ### `config/`
-Configurações globais da aplicação: conexão com banco de dados, variáveis de ambiente e inicialização de clientes HTTP para serviços externos.
+Global application settings: database connection and environment variables.
 
-### `controllers/`
-Recebe a requisição HTTP e delega para o service correspondente. Não contém lógica de negócio — apenas interpreta a entrada e devolve a resposta.
+### `db/`
+Database table definitions via Drizzle ORM. Single source of truth for the database schema — TypeScript types and migrations are generated from here.
 
-### `services/`
-Coração do SOA. Contém toda a lógica de negócio e orquestra as demais camadas: chama adapters para buscar dados externos, usa repositories para persistir no banco e aciona mappers para transformar os dados.
+### `modules/`
+Each module groups all artifacts of a business entity in one place. A module contains five layers:
 
-### `repositories/`
-Único ponto de contato com o banco de dados. Concentra todas as operações de leitura e escrita (queries, inserts, updates, deletes), isolando o restante da aplicação do ORM ou driver utilizado.
+| File | Responsibility |
+|---|---|
+| `*.schema.ts` | Zod schemas for input/output validation + derived TypeScript types |
+| `*.repository.ts` | Single point of contact with the database — all queries live here |
+| `*.service.ts` | Business logic: orchestrates the repository and enforces application rules |
+| `*.controller.ts` | Parses the HTTP request and delegates to the service; returns the response |
+| `*.routes.ts` | Declares endpoints, binds Zod schemas, and connects to the controller |
 
-### `models/`
-Define a estrutura das entidades e tabelas do banco de dados. Representa os dados no formato em que são armazenados.
-
-### `dtos/`
-Data Transfer Objects — definem e validam o contrato de dados entre camadas.
-
-- **`request/`** — formata e valida o que chega do frontend ou de um cliente externo.
-- **`response/`** — formata o que é devolvido ao frontend, evitando expor a estrutura interna da aplicação.
-
-### `adapters/`
-Responsável por consumir APIs de serviços externos. Cada adapter encapsula um serviço terceiro (autenticação, chamadas HTTP, tratamento de erros da API externa), isolando o restante da aplicação de mudanças nesses serviços.
-
-### `mappers/`
-Transforma dados entre as camadas da aplicação. Por exemplo: converte a resposta de uma API externa para o modelo interno, ou converte uma entidade do banco para o formato esperado pelo frontend.
-
-### `middlewares/`
-Lógica transversal aplicada nas rotas: autenticação, autorização, logging, tratamento centralizado de erros e rate limiting.
-
-### `utils/`
-Funções auxiliares reutilizáveis sem vínculo com a lógica de negócio. Exemplos: formatação de datas, geração de hashes, validadores genéricos.
-
-### `routes/`
-Define os endpoints HTTP e os conecta aos controllers correspondentes. Ponto de entrada das requisições na aplicação.
+### `plugins/`
+Fastify plugins registered globally before routes: OpenAPI docs (Swagger + Scalar), auth, CORS, rate-limit, etc.
 
 ### `tests/unit/`
-Testa funções e services de forma isolada, sem dependência de banco de dados ou chamadas HTTP reais.
+Tests services and functions in isolation, without a real database or HTTP calls.
 
 ### `tests/integration/`
-Testa o fluxo completo da aplicação com banco de dados e APIs reais ou mockadas, garantindo que as camadas funcionam corretamente em conjunto.
+Tests the full application flow with a real or mocked database.
 
 ---
 
-## Fluxo de uma requisição
+## Request Flow
 
 ```
-routes → controller → service → adapter  (API externa)
-                              → repository (banco de dados)
-                              ↓
-                          mapper → dto/response → frontend
+server.ts
+   └─ routes → controller → service → repository → database
+                                           ↓
+                                    schema/types → response → frontend
 ```
