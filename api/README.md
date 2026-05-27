@@ -16,6 +16,7 @@ api/
 │   ├── modules/
 │   │   ├── players/
 │   │   │   ├── players.schema.ts
+│   │   │   ├── players.interface.ts
 │   │   │   ├── players.adapter.ts
 │   │   │   ├── players.mapper.ts
 │   │   │   ├── players.repository.ts
@@ -51,10 +52,11 @@ Each module groups all artifacts of a business entity in one place. A module con
 | File | Responsibility |
 |---|---|
 | `*.schema.ts` | Zod schemas for input/output validation + derived TypeScript types |
+| `*.interface.ts` | Contracts (`IAdapter`, `IMapper`, `IRepository`, `IService`, `IController`) that each layer depends on instead of concretes |
 | `*.adapter.ts` | Consumes the external service API — isolates HTTP calls and error handling |
-| `*.mapper.ts` | Transforms external service responses into the internal model |
-| `*.repository.ts` | Persists in the database only what the external service does not manage |
-| `*.service.ts` | Orchestrates adapter, mapper and repository; enforces business rules |
+| `*.mapper.ts` | Transforms raw external responses into the internal domain model |
+| `*.repository.ts` | Calls the adapter to fetch raw data, uses the mapper to convert it, and persists domain state in the database |
+| `*.service.ts` | Enforces business rules and orchestrates repository calls |
 | `*.controller.ts` | Parses the HTTP request and delegates to the service; returns the response |
 | `*.routes.ts` | Declares endpoints, binds Zod schemas, and connects to the controller |
 
@@ -73,9 +75,9 @@ Tests the full application flow with a real or mocked database.
 
 ```
 server.ts
-   └─ routes → controller → service → adapter    → external service (Users / Cards / Trades)
-                                     → mapper    → internal model
-                                     → repository → database (ban, level, cache)
+   └─ routes → controller → service → repository → adapter → external service (Users / Cards / Trades)
+                                                  → mapper  → internal domain model
+                                                  → database (ban, level, cache)
                                            ↓
                                     schema/types → response → frontend
 ```
@@ -123,124 +125,170 @@ classDiagram
     }
 
     namespace players {
-        class PlayersRoutes {
-            +GET /players
-            +GET /players/:id
-            +PATCH /players/:id/ban
-            +PATCH /players/:id/level
+        class IPlayersController {
+            <<interface>>
+            +findAll()
+            +findById()
+            +banById()
+            +create()
+            +update()
+            +delete()
+        }
+        class IPlayerService {
+            <<interface>>
+            +findAll()
+            +findById()
+            +create()
+            +update()
+            +delete()
+        }
+        class IPlayerRepository {
+            <<interface>>
+            +findAll()
+            +findById()
+            +create()
+            +update()
+            +delete()
+        }
+        class IPlayersAdapter {
+            <<interface>>
+            +fetchAll()
+            +fetchById()
+            +create()
+            +update()
+            +delete()
+        }
+        class IPlayersMapper {
+            <<interface>>
+            +toInternal()
+            +toResponse()
         }
         class PlayersController {
-            +list()
+            -service IPlayerService
+            +findAll()
             +findById()
-            +updateBan()
-            +updateLevel()
+            +banById()
+            +create()
+            +update()
+            +delete()
         }
         class PlayersService {
-            +list()
+            -repo IPlayerRepository
+            +findAll()
             +findById()
-            +updateBan()
-            +updateLevel()
+            +create()
+            +update()
+            +delete()
+        }
+        class PlayersRepository {
+            -adapter IPlayersAdapter
+            -mapper IPlayersMapper
+            +findAll()
+            +findById()
+            +create()
+            +update()
+            +delete()
         }
         class PlayersAdapter {
             +fetchAll()
             +fetchById()
+            +create()
+            +update()
+            +delete()
         }
         class PlayersMapper {
             +toInternal()
             +toResponse()
         }
-        class PlayersRepository {
-            +findAll()
-            +findById()
-            +updateBan()
-            +updateLevel()
+        class PlayersRoutes {
+            +GET /players
+            +GET /players/:id
+            +PATCH /players/:id/ban
+            +POST /players
+            +PUT /players/:id
+            +DELETE /players/:id
         }
     }
 
     namespace cards {
+        class ICardsController { <<interface>> }
+        class ICardService { <<interface>> }
+        class ICardRepository { <<interface>> }
+        class ICardsAdapter { <<interface>> }
+        class ICardsMapper { <<interface>> }
+        class CardsController { -service ICardService }
+        class CardsService { -repo ICardRepository }
+        class CardsRepository { -adapter ICardsAdapter \n -mapper ICardsMapper }
+        class CardsAdapter
+        class CardsMapper
         class CardsRoutes {
             +GET /cards
             +GET /cards/:id
         }
-        class CardsController {
-            +list()
-            +findById()
-        }
-        class CardsService {
-            +list()
-            +findById()
-        }
-        class CardsAdapter {
-            +fetchAll()
-            +fetchById()
-        }
-        class CardsMapper {
-            +toInternal()
-            +toResponse()
-        }
-        class CardsRepository {
-            +findAll()
-            +findById()
-        }
     }
 
     namespace trades {
+        class ITradesController { <<interface>> }
+        class ITradeService { <<interface>> }
+        class ITradeRepository { <<interface>> }
+        class ITradesAdapter { <<interface>> }
+        class ITradesMapper { <<interface>> }
+        class TradesController { -service ITradeService }
+        class TradesService { -repo ITradeRepository }
+        class TradesRepository { -adapter ITradesAdapter \n -mapper ITradesMapper }
+        class TradesAdapter
+        class TradesMapper
         class TradesRoutes {
             +GET /trades
             +GET /trades/:id
             +PATCH /trades/:id/status
         }
-        class TradesController {
-            +list()
-            +findById()
-            +updateStatus()
-        }
-        class TradesService {
-            +list()
-            +findById()
-            +updateStatus()
-        }
-        class TradesAdapter {
-            +fetchAll()
-            +fetchById()
-        }
-        class TradesMapper {
-            +toInternal()
-            +toResponse()
-        }
-        class TradesRepository {
-            +findAll()
-            +findById()
-            +updateStatus()
-        }
     }
+
+    PlayersController ..|> IPlayersController
+    PlayersController --> IPlayerService
+    PlayersService ..|> IPlayerService
+    PlayersService --> IPlayerRepository
+    PlayersRepository ..|> IPlayerRepository
+    PlayersRepository --> IPlayersAdapter
+    PlayersRepository --> IPlayersMapper
+    PlayersAdapter ..|> IPlayersAdapter
+    PlayersMapper ..|> IPlayersMapper
+
+    CardsController ..|> ICardsController
+    CardsController --> ICardService
+    CardsService ..|> ICardService
+    CardsService --> ICardRepository
+    CardsRepository ..|> ICardRepository
+    CardsRepository --> ICardsAdapter
+    CardsRepository --> ICardsMapper
+    CardsAdapter ..|> ICardsAdapter
+    CardsMapper ..|> ICardsMapper
+
+    TradesController ..|> ITradesController
+    TradesController --> ITradeService
+    TradesService ..|> ITradeService
+    TradesService --> ITradeRepository
+    TradesRepository ..|> ITradeRepository
+    TradesRepository --> ITradesAdapter
+    TradesRepository --> ITradesMapper
+    TradesAdapter ..|> ITradesAdapter
+    TradesMapper ..|> ITradesMapper
 
     Server --> DocsPlugin : registers
     Server --> PlayersRoutes : prefix /players
     Server --> CardsRoutes : prefix /cards
     Server --> TradesRoutes : prefix /trades
 
-    PlayersRoutes --> PlayersController : delegates
-    PlayersController --> PlayersService : calls
-    PlayersService --> PlayersAdapter : fetch
-    PlayersService --> PlayersMapper : transform
-    PlayersService --> PlayersRepository : persist
+    PlayersRoutes --> IPlayersController
+    CardsRoutes --> ICardsController
+    TradesRoutes --> ITradesController
+
     PlayersAdapter --> UsersService : HTTP
-    PlayersRepository --> Database : uses
-
-    CardsRoutes --> CardsController : delegates
-    CardsController --> CardsService : calls
-    CardsService --> CardsAdapter : fetch
-    CardsService --> CardsMapper : transform
-    CardsService --> CardsRepository : persist
     CardsAdapter --> CardDistributionService : HTTP
-    CardsRepository --> Database : uses
-
-    TradesRoutes --> TradesController : delegates
-    TradesController --> TradesService : calls
-    TradesService --> TradesAdapter : fetch
-    TradesService --> TradesMapper : transform
-    TradesService --> TradesRepository : persist
     TradesAdapter --> TradesAPI : HTTP
+
+    PlayersRepository --> Database : uses
+    CardsRepository --> Database : uses
     TradesRepository --> Database : uses
 ```

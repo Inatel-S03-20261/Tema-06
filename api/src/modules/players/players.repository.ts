@@ -1,17 +1,38 @@
-import type { PlayerLevel } from './players.schema.js'
+import { IPlayerRepository, IPlayersAdapter, IPlayersMapper } from "./players.interface";
+import { playersAdapter } from "./players.adapter";
+import { playersMapper } from "./players.mapper";
+import { Player } from "./players.schema";
 
-export async function findAll(name?: string) {
-  // TODO
+class PlayersRepository implements IPlayerRepository {
+  constructor(
+    private adapter: IPlayersAdapter,
+    private mapper: IPlayersMapper,
+  ) {}
+
+  async findAll(name?: string): Promise<Player[]> {
+    const raw = await this.adapter.fetchAll(name);
+    return raw.map(r => this.mapper.toInternal(r));
+  }
+
+  async findById(id: string): Promise<Player> {
+    const raw = await this.adapter.fetchById(id);
+    return this.mapper.toInternal(raw);
+  }
+
+  async create(player: Player): Promise<Player> {
+    const raw = await this.adapter.create(player);
+    return this.mapper.toInternal(raw);
+  }
+
+  async update(id: string, player: Player): Promise<Player> {
+    const raw = await this.adapter.update(id, player);
+    return this.mapper.toInternal(raw);
+  }
+
+  async delete(id: string): Promise<boolean> {
+    await this.adapter.delete(id);
+    return true;
+  }
 }
 
-export async function findById(id: string) {
-  // TODO
-}
-
-export async function updateBan(id: string, isBanned: boolean) {
-  // TODO
-}
-
-export async function updateLevel(id: string, level: PlayerLevel) {
-  // TODO
-}
+export const playersRepository = new PlayersRepository(playersAdapter, playersMapper);

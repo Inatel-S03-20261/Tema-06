@@ -1,18 +1,29 @@
-import * as playersRepository from './players.repository.js'
-import type { PlayerLevel } from './players.schema.js'
+import { IPlayerRepository, IPlayerService } from "./players.interface";
+import { playersRepository } from "./players.repository";
+import { Player } from "./players.schema";
 
-export async function list(name?: string) {
-  // TODO
+class PlayersService implements IPlayerService {
+  constructor(private repo: IPlayerRepository) {}
+
+  async findAll(name?: string): Promise<Player[]> {
+    return this.repo.findAll(name);
+  }
+
+  async findById(id: string): Promise<Player> {
+    return this.repo.findById(id);
+  }
+
+  async create(player: Player): Promise<Player> {
+    return this.repo.create(player);
+  }
+
+  async update(id: string, player: Player): Promise<Player> {
+    return this.repo.update(id, player);
+  }
+
+  async delete(id: string): Promise<boolean> {
+    return this.repo.delete(id);
+  }
 }
 
-export async function findById(id: string) {
-  // TODO
-}
-
-export async function updateBan(id: string, isBanned: boolean) {
-  // TODO
-}
-
-export async function updateLevel(id: string, level: PlayerLevel) {
-  // TODO
-}
+export const playersService = new PlayersService(playersRepository);

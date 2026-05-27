@@ -1,7 +1,14 @@
-export function toInternal(raw: unknown) {
-  // TODO
+import { IPlayersMapper } from "./players.interface";
+import { Player } from "./players.schema";
+
+class PlayersMapper implements IPlayersMapper {
+  toInternal(raw: unknown): Player {
+    return {} as Player;
+  }
+
+  toResponse(player: Player): Player {
+    return player;
+  }
 }
 
-export function toResponse(internal: unknown) {
-  // TODO
-}
+export const playersMapper = new PlayersMapper();
