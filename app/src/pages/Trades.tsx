@@ -1,12 +1,10 @@
-import { useState } from "react";
-import ClearFiltersButton from "../components/ClearFiltersButton";
-import PageLayout from "../components/PageLayout";
-import PageSection from "../components/PageSection";
-import SearchInput from "../components/SearchInput";
-import SelectInput from "../components/SelectInput";
-import Tooltip from "../components/Tooltip";
-import TradeList from "../components/trades/TradeList";
-import TradeSummary from "../components/trades/TradeSummary";
+import { useMemo, useState } from "react";
+
+import ClearFiltersButton from "../components/forms/ClearFiltersButton";
+import PageLayout from "../components/layout/PageLayout";
+import SearchInput from "../components/forms/SearchInput";
+import SelectInput from "../components/forms/SelectInput";
+import TradeTable from "../components/trades/TradeTable";
 import { trocasMock } from "../services/tradeService";
 import type { TradeStatus } from "../types/Trade";
 
@@ -25,15 +23,21 @@ const Trades = () => {
     const [cartaFiltro, setCartaFiltro] = useState("");
     const hasActiveFilters = statusFiltro !== "Todas" || cartaFiltro !== "";
 
-    const trocasFiltradas = trocasMock.filter((troca) => {
-        const statusValido =
-            statusFiltro === "Todas" || troca.status === statusFiltro;
-        const cartaValida = troca.cartasOfertadas.some((carta) =>
-            carta.nome.toLowerCase().includes(cartaFiltro.toLowerCase()),
-        );
+    const trocasFiltradas = useMemo(
+        () =>
+            trocasMock.filter((troca) => {
+                const statusValido =
+                    statusFiltro === "Todas" || troca.status === statusFiltro;
+                const cartaValida = troca.cartasOfertadas.some((carta) =>
+                    carta.nome
+                        .toLowerCase()
+                        .includes(cartaFiltro.toLowerCase()),
+                );
 
-        return statusValido && cartaValida;
-    });
+                return statusValido && cartaValida;
+            }),
+        [cartaFiltro, statusFiltro],
+    );
 
     const limparFiltros = () => {
         setStatusFiltro("Todas");
@@ -42,12 +46,12 @@ const Trades = () => {
 
     return (
         <PageLayout title="Trocas">
-            <div className="flex flex-col gap-8">
-                <TradeSummary trades={trocasMock} />
-
-                <PageSection title="Filtros">
-                    <div className="flex flex-col gap-4 md:flex-row md:items-end">
+            <TradeTable
+                trades={trocasFiltradas}
+                filters={
+                    <>
                         <SearchInput
+                            label="Carta"
                             value={cartaFiltro}
                             onChange={setCartaFiltro}
                             placeholder="Filtrar por carta"
@@ -64,20 +68,9 @@ const Trades = () => {
                             onClick={limparFiltros}
                             disabled={!hasActiveFilters}
                         />
-                    </div>
-                </PageSection>
-
-                <PageSection
-                    title={
-                        <>
-                            Trocas
-                            <Tooltip content="Aberta: disponível para negociação. Proposta: oferta recebida em análise. Finalizada: troca concluída." />
-                        </>
-                    }
-                >
-                    <TradeList trades={trocasFiltradas} />
-                </PageSection>
-            </div>
+                    </>
+                }
+            />
         </PageLayout>
     );
 };

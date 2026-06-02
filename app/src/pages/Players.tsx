@@ -1,19 +1,43 @@
-import { useState } from "react";
-import ClearFiltersButton from "../components/ClearFiltersButton";
-import PageLayout from "../components/PageLayout";
-import PlayerList from "../components/players/PlayerList";
-import SearchInput from "../components/SearchInput";
+import { useEffect, useMemo, useState } from "react";
+
+import PageLayout from "../components/layout/PageLayout";
+import PlayerDetailsSidebar from "../components/players/PlayerDetailsSidebar";
+import PlayerTable from "../components/players/PlayerTable";
 import { jogadoresMock } from "../services/playerService";
 import type { Player } from "../types/Player";
 
 const Players = () => {
     const [jogadores, setJogadores] = useState<Player[]>(jogadoresMock);
     const [filtro, setFiltro] = useState("");
+    const [selectedPlayerId, setSelectedPlayerId] = useState<string>();
+    const [isDetailsOpen, setIsDetailsOpen] = useState(false);
     const hasActiveFilters = filtro !== "";
 
-    const jogadoresFiltrados = jogadores.filter((jogador) =>
-        jogador.nome.toLowerCase().includes(filtro.toLowerCase()),
+    const jogadoresFiltrados = useMemo(
+        () =>
+            jogadores.filter((jogador) =>
+                jogador.nome.toLowerCase().includes(filtro.toLowerCase()),
+            ),
+        [filtro, jogadores],
     );
+    const selectedPlayer = jogadoresFiltrados.find(
+        (jogador) => jogador.id === selectedPlayerId,
+    );
+
+    useEffect(() => {
+        const hasSelectedPlayer = jogadoresFiltrados.some(
+            (jogador) => jogador.id === selectedPlayerId,
+        );
+
+        if (!hasSelectedPlayer) {
+            setSelectedPlayerId(jogadoresFiltrados[0]?.id);
+        }
+    }, [jogadoresFiltrados, selectedPlayerId]);
+
+    const selecionarJogador = (id: string) => {
+        setSelectedPlayerId(id);
+        setIsDetailsOpen(true);
+    };
 
     const alterarBanimento = (id: string) => {
         const jogadoresAtualizados = jogadores.map((jogador) => {
@@ -51,24 +75,30 @@ const Players = () => {
     };
 
     return (
-        <PageLayout title="Jogadores">
-            <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end">
-                <SearchInput
-                    value={filtro}
-                    onChange={setFiltro}
-                    placeholder="Filtrar por nome"
-                />
-                <ClearFiltersButton
-                    onClick={() => setFiltro("")}
-                    disabled={!hasActiveFilters}
-                />
-            </div>
-
-            <PlayerList
+        <PageLayout
+            title="Jogadores"
+            contentClassName="relative"
+        >
+            <PlayerTable
                 players={jogadoresFiltrados}
+                filter={filtro}
+                selectedPlayerId={isDetailsOpen ? selectedPlayerId : undefined}
+                hasActiveFilters={hasActiveFilters}
+                onFilterChange={setFiltro}
+                onClearFilters={() => setFiltro("")}
+                onSelectPlayer={selecionarJogador}
                 onToggleBan={alterarBanimento}
                 onToggleLevel={alterarNivel}
             />
+
+            {isDetailsOpen && (
+                <div className="absolute inset-y-0 right-0 z-20 w-full max-w-[34rem]">
+                    <PlayerDetailsSidebar
+                        player={selectedPlayer}
+                        onClose={() => setIsDetailsOpen(false)}
+                    />
+                </div>
+            )}
         </PageLayout>
     );
 };

@@ -1,6 +1,11 @@
-import { Eye, EyeClosed, LockKeyhole, User } from "lucide-react";
+import type { FormEvent } from "react";
 import { useState } from "react";
+import { Eye, EyeClosed, LockKeyhole, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+
+import CheckboxInput from "../components/forms/CheckboxInput";
+import TextInput from "../components/forms/TextInput";
+import Button from "../components/ui/Button";
 
 const MOCK_USER = { username: "admin", password: "admin" };
 
@@ -11,8 +16,14 @@ const Login = () => {
     const [error, setError] = useState("");
     const navigate = useNavigate();
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        if (!username.trim() || !password.trim()) {
+            setError("Informe o Trainer ID e a senha.");
+            return;
+        }
+
         if (
             username === MOCK_USER.username &&
             password === MOCK_USER.password
@@ -45,80 +56,62 @@ const Login = () => {
                         onSubmit={handleSubmit}
                         className="w-full flex flex-col gap-5"
                     >
-                        <div className="flex flex-col gap-1">
-                            <label className="text-xs font-semibold text-gray-500 tracking-widest">
-                                TRAINER ID
-                            </label>
-                            <div className="flex items-center gap-2 bg-gray-100 rounded-lg px-4 py-3 text-gray-500">
-                                <User size={16} />
-                                <input
-                                    type="text"
-                                    placeholder="Seu usuário"
-                                    className="bg-transparent text-sm placeholder-gray-400 outline-none w-full"
-                                    onChange={(e) => {
-                                        setUsername(e.target.value);
-                                        setError("");
-                                    }}
-                                />
-                            </div>
-                        </div>
+                        <TextInput
+                            label="TRAINER ID"
+                            type="text"
+                            placeholder="Seu usuário"
+                            value={username}
+                            icon={<User size={16} />}
+                            onChange={(event) => {
+                                setUsername(event.target.value);
+                                setError("");
+                            }}
+                        />
 
-                        <div className="flex flex-col gap-1">
-                            <label className="text-xs font-semibold text-gray-500 tracking-widest">
-                                SENHA
-                            </label>
-                            <div className="flex items-center gap-2 bg-gray-100 text-gray-500 rounded-lg px-4 py-3">
-                                <LockKeyhole size={16} />
-                                <input
-                                    type={seePassword ? "text" : "password"}
-                                    placeholder="Sua senha"
-                                    className="bg-transparent text-sm placeholder-gray-400 outline-none w-full"
-                                    onChange={(e) => {
-                                        setPassword(e.target.value);
-                                        setError("");
-                                    }}
-                                />
-                                {seePassword ? (
-                                    <Eye
-                                        size={16}
-                                        className="cursor-pointer"
-                                        onClick={() => setSeePassword(false)}
-                                    />
-                                ) : (
-                                    <EyeClosed
-                                        size={16}
-                                        className="cursor-pointer"
-                                        onClick={() => setSeePassword(true)}
-                                    />
-                                )}
-                            </div>
-                            {error && (
-                                <p className="text-red-500 text-xs mt-1">
-                                    {error}
-                                </p>
-                            )}
-                        </div>
+                        <TextInput
+                            label="SENHA"
+                            type={seePassword ? "text" : "password"}
+                            placeholder="Sua senha"
+                            value={password}
+                            icon={<LockKeyhole size={16} />}
+                            error={error}
+                            onChange={(event) => {
+                                setPassword(event.target.value);
+                                setError("");
+                            }}
+                            action={
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    aria-label={
+                                        seePassword
+                                            ? "Ocultar senha"
+                                            : "Mostrar senha"
+                                    }
+                                    className="h-6 w-6 p-0"
+                                    onClick={() =>
+                                        setSeePassword(
+                                            (currentValue) => !currentValue,
+                                        )
+                                    }
+                                >
+                                    {seePassword ? (
+                                        <Eye size={16} />
+                                    ) : (
+                                        <EyeClosed size={16} />
+                                    )}
+                                </Button>
+                            }
+                        />
 
-                        <div className="flex items-center gap-2">
-                            <input
-                                type="checkbox"
-                                id="remember"
-                                className="w-4 h-4 accent-red-500 cursor-pointer"
-                            />
-                            <label
-                                htmlFor="remember"
-                                className="text-sm text-gray-600 cursor-pointer"
-                            >
-                                Lembre-me
-                            </label>
-                        </div>
+                        <CheckboxInput id="remember" label="Lembre-me" />
 
-                        <button
+                        <Button
                             type="submit"
-                            className="font-orbitron font-bold w-full bg-red-500 hover:bg-red-600 active:scale-95 transition-all text-white tracking-[0.2em] py-3 rounded-full mt-2 cursor-pointer"
+                            className="mt-2 w-full rounded-full py-3 font-orbitron tracking-[0.2em] active:scale-95"
                         >
                             ENTRAR
-                        </button>
+                        </Button>
                     </form>
                 </div>
             </div>
