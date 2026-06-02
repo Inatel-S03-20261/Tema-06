@@ -19,7 +19,7 @@ Responsável por administrar a posse de cartas na plataforma. Deve fornecer um p
 ![diagrama-classes-S03](./Docs/Diagramas/diagrama-classes-S03.jpg)
 
 **Diagrama de sequência:**
-<img width="1906" height="2985" alt="diagrama-sequencia-S03 drawio" src="https://github.com/user-attachments/assets/e74cefa5-7341-4fc1-a455-dadbf8019a32" />
+![diagrama-classes-S03](./Docs/Diagramas/diagrama-sequencia-S03.jpg)
 
 ## Princípios SOLID
 

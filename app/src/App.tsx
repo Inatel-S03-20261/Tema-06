@@ -1,13 +1,22 @@
 import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
-import Header from "./components/Header";
+import PlayerDetails from "./pages/PlayerDetails";
+import Players from "./pages/Players";
+import TradeDashboard from "./pages/Trades";
+import Login from "./pages/Login";
 
 const App = () => {
     return (
         <>
-            <Header />
             <Routes>
+                <Route path="/login" element={<Login />} />
                 <Route path="/" element={<Home />} />
+                <Route path="/jogadores" element={<Players />} />
+                <Route
+                    path="/jogadores/:playerId"
+                    element={<PlayerDetails />}
+                />
+                <Route path="/trocas" element={<TradeDashboard />} />
             </Routes>
         </>
     );

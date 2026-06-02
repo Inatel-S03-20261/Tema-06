@@ -1,73 +1,36 @@
-# React + TypeScript + Vite
+## Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+O frontend fica em `app` e usa React, TypeScript, Vite, React Router e Tailwind CSS. As telas seguem os diagramas do projeto como referência: `PlayerPage` lista jogadores, `PlayerDetailComponent` exibe perfil, cartas e trocas de um jogador, e `TradePage` consolida o dashboard de trocas.
 
-Currently, two official plugins are available:
+Rotas principais:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- `/`: tela inicial do painel administrativo.
+- `/jogadores`: listagem e filtro de jogadores.
+- `/jogadores/:playerId`: detalhes do jogador, inventário de cartas e histórico de trocas.
+- `/trocas`: dashboard com resumo e filtros de trocas.
 
-## React Compiler
+Componentes compartilhados:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- `app/src/components/PageLayout.tsx`: estrutura responsiva comum das páginas.
+- `app/src/components/Header.tsx`: cabeçalho global com navegação principal.
+- `app/src/components/ActionLink.tsx`: link com aparência de ação.
+- `app/src/components/Button.tsx`: botão primário reutilizável.
+- `app/src/components/ClearFiltersButton.tsx`: botão para resetar filtros ativos.
+- `app/src/components/PageSection.tsx`: seção de página com título padronizado.
+- `app/src/components/SearchInput.tsx`: campo controlado para filtros simples.
+- `app/src/components/SelectInput.tsx`: seleção controlada com rótulo contextual.
+- `app/src/components/Tooltip.tsx`: ajuda contextual reutilizável.
 
-## Expanding the ESLint configuration
+Componentes por domínio:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- `app/src/components/players`: lista, card e status de jogadores.
+- `app/src/components/cards`: listagem de cartas.
+- `app/src/components/trades`: resumo e listagem de trocas.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Como executar o frontend
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+cd app
+npm install
+npm run dev
 ```
