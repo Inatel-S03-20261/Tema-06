@@ -4,9 +4,8 @@ import {
   playerParamsSchema,
   listPlayersQuerySchema,
   updateBanBodySchema,
-  updateLevelBodySchema,
 } from './players.schema.js'
-import * as playersController from './players.controller.js'
+import { playersController } from './players.controller.js'
 
 export async function playersRoutes(router: FastifyInstance) {
   router.get('/', {
@@ -16,7 +15,7 @@ export async function playersRoutes(router: FastifyInstance) {
       querystring: listPlayersQuerySchema,
       response: { 200: playerSchema.array() },
     },
-    handler: playersController.list,
+    handler: playersController.findAll,
   })
 
   router.get('/:id', {
@@ -37,17 +36,6 @@ export async function playersRoutes(router: FastifyInstance) {
       body: updateBanBodySchema,
       response: { 200: playerSchema },
     },
-    handler: playersController.updateBan,
-  })
-
-  router.patch('/:id/level', {
-    schema: {
-      tags: ['players'],
-      summary: 'Update player level',
-      params: playerParamsSchema,
-      body: updateLevelBodySchema,
-      response: { 200: playerSchema },
-    },
-    handler: playersController.updateLevel,
+    handler: playersController.banById,
   })
 }
