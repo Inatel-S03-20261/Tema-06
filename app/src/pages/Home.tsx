@@ -22,6 +22,7 @@ const Home = () => {
     return (
         <PageLayout
             title={`Bem-vindo, ${userName} 👋`}
+            subtitle="Gerenciar"
             contentClassName="grid gap-4 md:grid-cols-2"
         >
             <HomeCard
