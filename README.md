@@ -275,3 +275,16 @@ Como melhoria, poderiam ser criadas interfaces como `IPlayerService` e `ITradeSe
 ### **D — Dependency Inversion Principle** ❌ Não implementado
 As camadas se comunicam diretamente por implementações concretas.  
 Uma evolução futura seria fazer os controllers dependerem de abstrações, o que melhoraria flexibilidade, testes e manutenção.
+
+
+## Escolha das Arquiteturas
+
+O projeto utiliza uma combinação de conceitos arquiteturais para organizar melhor a aplicação e facilitar sua evolução.
+
+### SPA — Single Page Application
+
+A aplicação segue o conceito de **SPA** no front-end, pois é carregada em uma única página e a navegação entre as telas acontece de forma dinâmica, sem recarregar o site inteiro. Isso deixa a experiência do usuário mais rápida e fluida.
+
+### SOA — Service-Oriented Architecture
+
+Também aplicamos conceitos de **SOA**, organizando o sistema em partes com responsabilidades bem definidas. A ideia é separar funcionalidades em serviços ou módulos, como jogadores, cartas e trocas, facilitando manutenção, reaproveitamento e integração com APIs externas.
