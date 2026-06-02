@@ -1,11 +1,12 @@
 # 🛡️ Painel de Administração (Aplicação 6)
-Responsável por administrar a posse de cartas na plataforma. Deve fornecer um painel administrativo com as informações dos jogadores e as cartas que eles possuem, além das trocas em aberto, propostas realizadas e histórico de trocas finalizadas.
+Responsável por administrar a posse de cartas na plataforma. O projeto fornece um painel administrativo em React para acompanhar jogadores, cartas, batalhas e trocas, com navegação inferior fixa.
 
 # Funcionalidades
 * **Acesso Restrito:** Login seguro e exclusivo para os administradores da plataforma.
 * **Gestão de Jogadores:** Listagem e busca de usuários, permitindo banir, desbanir ou promovê-los a administrador.
-* **Visão de Perfil:** Consulta detalhada do inventário (cartas possuídas) e do histórico de transações de cada jogador.
-* **Catálogo de Cartas:** Listagem de todas as cartas disponíveis no ecossistema, com opção de filtro por tipo.
+* **Visão de Perfil:** Consulta detalhada em sidebar com perfil, batalhas, cartas possuídas e histórico de trocas do jogador.
+* **Catálogo de Cartas:** Listagem de todas as cartas disponíveis no ecossistema, com filtros por nome, tipo e raridade.
+* **Monitoramento de Batalhas:** Listagem e filtros por jogador ou status da batalha.
 * **Monitoramento de Trocas:**
   * Acompanhamento em tempo real das trocas que estão em aberto.
   * Visualização dos detalhes das propostas realizadas (jogadores envolvidos e cartas ofertadas).

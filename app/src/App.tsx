@@ -1,9 +1,11 @@
 import { Routes, Route } from "react-router-dom";
+
+import Battles from "./pages/Battles";
+import Cards from "./pages/Cards";
 import Home from "./pages/Home";
-import PlayerDetails from "./pages/PlayerDetails";
+import Login from "./pages/Login";
 import Players from "./pages/Players";
 import TradeDashboard from "./pages/Trades";
-import Login from "./pages/Login";
 
 const App = () => {
     return (
@@ -12,10 +14,8 @@ const App = () => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/" element={<Home />} />
                 <Route path="/jogadores" element={<Players />} />
-                <Route
-                    path="/jogadores/:playerId"
-                    element={<PlayerDetails />}
-                />
+                <Route path="/cartas" element={<Cards />} />
+                <Route path="/batalhas" element={<Battles />} />
                 <Route path="/trocas" element={<TradeDashboard />} />
             </Routes>
         </>
