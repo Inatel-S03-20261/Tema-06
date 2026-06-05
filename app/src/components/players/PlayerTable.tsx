@@ -51,7 +51,7 @@ const PlayerRow = ({
     const levelBadge = getLevelBadge(player.nivel);
     const statusBadge = getStatusBadge(player.statusBanimento);
     const rowClassName =
-        `grid gap-3 border-b border-gray-100 px-4 py-3 transition last:border-b-0 md:grid-cols-[minmax(0,1fr)_8rem_8rem_12rem] md:items-center md:gap-0 ${
+        `grid gap-3 border-b border-gray-100 px-4 py-3 transition last:border-b-0 md:grid-cols-[minmax(0,1fr)_5rem_7rem_10rem] md:items-center md:gap-0 ${
             isSelected ? "bg-red-50" : "bg-white hover:bg-gray-50"
         }`.trim();
 
@@ -151,6 +151,12 @@ const PlayerTable = ({
                 <span className="text-center">Ações</span>,
             ]}
             gridClassName="grid grid-cols-[minmax(0,1fr)_8rem_8rem_12rem] items-center gap-0"
+            headerColumnClassNames={[
+                "",
+                "pl-32",
+                "pl-23",
+                "pl-25",
+            ]}
         >
             {players.map((player) => (
                 <PlayerRow

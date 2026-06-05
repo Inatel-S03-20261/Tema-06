@@ -9,6 +9,7 @@ type DataTableProps = {
     gridClassName: string;
     children: ReactNode;
     filters?: ReactNode;
+    headerColumnClassNames?: string[];
 };
 
 const DataTable = ({
@@ -18,12 +19,13 @@ const DataTable = ({
     gridClassName,
     children,
     filters,
+    headerColumnClassNames = [],
 }: DataTableProps) => {
     return (
-        <PanelCard className="p-0">
+        <PanelCard className="p-0 overflow-hidden">
             <div className="overflow-x-auto">
                 <div className="min-w-max">
-                    <div className="flex items-center justify-between py-1">
+                    <div className="flex items-center justify-between px-4 pb-4">
                         <h2 className="flex items-center gap-2 text-sm font-bold tracking-wide text-gray-900">
                             {title}
                         </h2>
@@ -41,10 +43,12 @@ const DataTable = ({
                     )}
 
                     <div
-                        className={`border-y border-gray-100 bg-gray-50 px-4 py-2 text-[11px] font-bold uppercase tracking-wide text-gray-400 ${gridClassName}`}
+                        className={`border-y border-gray-100 bg-gray-50 px-6 py-3 text-[11px] font-bold uppercase tracking-wide text-gray-400 ${gridClassName}`}
                     >
                         {columns.map((column, index) => (
-                            <span key={index}>{column}</span>
+                            <span key={index} className={headerColumnClassNames[index] ?? ""}>
+                                {column}
+                            </span>
                         ))}
                     </div>
 
