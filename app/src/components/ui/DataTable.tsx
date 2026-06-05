@@ -20,7 +20,7 @@ const DataTable = ({
     filters,
 }: DataTableProps) => {
     return (
-        <PanelCard className="min-h-[calc(100vh-11rem)] p-0">
+        <PanelCard className="p-0">
             <div className="overflow-x-auto">
                 <div className="min-w-max">
                     <div className="flex items-center justify-between py-1">

@@ -2,20 +2,14 @@ import { Ban, Crown, Eye } from "lucide-react";
 
 import Badge from "../ui/Badge";
 import Button from "../ui/Button";
-import ClearFiltersButton from "../forms/ClearFiltersButton";
 import DataTable from "../ui/DataTable";
-import SearchInput from "../forms/SearchInput";
 import Tooltip from "../ui/Tooltip";
 import type { Player } from "../../types/Player";
 import type { BadgeTone } from "../ui/Badge";
 
 type PlayerTableProps = {
     players: Player[];
-    filter: string;
     selectedPlayerId?: string;
-    hasActiveFilters: boolean;
-    onFilterChange: (value: string) => void;
-    onClearFilters: () => void;
     onSelectPlayer: (id: string) => void;
     onToggleBan: (id: string) => void;
     onToggleLevel: (id: string) => void;
@@ -141,11 +135,7 @@ const PlayerRow = ({
 
 const PlayerTable = ({
     players,
-    filter,
     selectedPlayerId,
-    hasActiveFilters,
-    onFilterChange,
-    onClearFilters,
     onSelectPlayer,
     onToggleBan,
     onToggleLevel,
@@ -161,20 +151,6 @@ const PlayerTable = ({
                 <span className="text-center">Ações</span>,
             ]}
             gridClassName="grid grid-cols-[minmax(0,1fr)_8rem_8rem_12rem] items-center gap-0"
-            filters={
-                <>
-                    <SearchInput
-                        label="Jogador"
-                        value={filter}
-                        onChange={onFilterChange}
-                        placeholder="Pesquisar jogador..."
-                    />
-                    <ClearFiltersButton
-                        onClick={onClearFilters}
-                        disabled={!hasActiveFilters}
-                    />
-                </>
-            }
         >
             {players.map((player) => (
                 <PlayerRow

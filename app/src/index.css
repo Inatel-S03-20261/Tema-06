@@ -6,6 +6,11 @@ body {
   font-family: 'Nunito', sans-serif;
 }
 
+html,
+body {
+    overflow: hidden;
+}
+
 @theme {
   --font-orbitron: 'Orbitron', sans-serif;
 }

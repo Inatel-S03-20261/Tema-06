@@ -24,7 +24,7 @@ const PageLayout = ({
 
             <section
                 aria-label={title}
-                className={`mx-5 min-h-screen pt-20 pb-24 md:mx-8 ${className}`.trim()}
+                className={`mx-5 h-[calc(100vh-5rem)] overflow-hidden pt-6 pb-24 md:mx-8 ${className}`.trim()}
             >
                 <div className="mb-4">
                     <h1 className="text-2xl font-bold text-gray-900">
