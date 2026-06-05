@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, SlidersHorizontal } from "lucide-react";
 
 import PageLayout from "../components/layout/PageLayout";
-import SearchInput from "../components/forms/SearchInput";
 import FilterPanel from "../components/forms/FilterPanel";
 import FilterChip from "../components/forms/FilterChip";
 import PlayerDetailsSidebar from "../components/players/PlayerDetailsSidebar";
@@ -54,10 +52,6 @@ const Players = () => {
             setSelectedPlayerId(jogadoresFiltrados[0]?.id);
         }
     }, [jogadoresFiltrados, selectedPlayerId]);
-
-    const voltarPagina = () => {
-        window.history.back();
-    };
 
     const selecionarJogador = (id: string) => {
         setSelectedPlayerId(id);

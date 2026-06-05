@@ -21,10 +21,17 @@ const Home = () => {
 
     return (
         <PageLayout
-            title={`Bem-vindo, ${userName} 👋`}
+            title={``}
+            showPageHeader={false}
             subtitle="Gerenciar"
             contentClassName="grid gap-4 md:grid-cols-2"
         >
+            <h1 className="md:col-span-2 text-base font-extrabold tracking-[0.22em] text-gray-950">
+                Bem-vindo,{" "}
+                <span className="text-red-500">
+                    {userName} 👋
+                </span>
+            </h1>
             <HomeCard
                 title="Jogadores"
                 description="Gerencia treinadores, perfis e status de conta"
