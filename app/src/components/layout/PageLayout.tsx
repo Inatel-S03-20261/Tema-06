@@ -1,44 +1,125 @@
 import type { ReactNode } from "react";
+import { ArrowLeft, SlidersHorizontal } from "lucide-react";
 
 import BottomNav from "./BottomNav";
 import Header from "./Header";
+import SearchInput from "../forms/SearchInput";
 
 type PageLayoutProps = {
     title: string;
-    subtitle?: string;
     children: ReactNode;
     className?: string;
     contentClassName?: string;
+
+    subtitle?: string;
+    showBackButton?: boolean;
+    onBack?: () => void;
+
+    searchValue?: string;
+    searchPlaceholder?: string;
+    onSearchChange?: (value: string) => void;
+
+    showFilterButton?: boolean;
+    isFilterOpen?: boolean;
+    onToggleFilters?: () => void;
+    filterContent?: ReactNode;
 };
 
 const PageLayout = ({
     title,
-    subtitle,
     children,
     className = "",
     contentClassName = "",
+
+    subtitle = "Gerenciar",
+    showBackButton = true,
+    onBack,
+
+    searchValue,
+    searchPlaceholder,
+    onSearchChange,
+
+    showFilterButton = false,
+    isFilterOpen = false,
+    onToggleFilters,
+    filterContent,
 }: PageLayoutProps) => {
+    const hasSearch = searchValue !== undefined && onSearchChange;
+
+    const handleBack = () => {
+        if (onBack) {
+            onBack();
+            return;
+        }
+
+        window.history.back();
+    };
+
     return (
         <>
             <Header />
 
             <section
                 aria-label={title}
-                className={`mx-5 h-[calc(100vh-5rem)] overflow-hidden pt-6 pb-24 md:mx-8 ${className}`.trim()}
+                className={`min-h-screen  bg-gray-200 px-10 pt-24 pb-28 ${className}`.trim()}
             >
-                <div className="mb-4">
-                    <h1 className="text-2xl font-bold text-gray-900">
-                        {title}
-                    </h1>
+                <div className={contentClassName}>
+                    <div className="mb-7 flex items-center gap-4">
+                        {showBackButton && (
+                            <button
+                                type="button"
+                                onClick={handleBack}
+                                aria-label="Voltar"
+                                className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-500 shadow-sm transition hover:bg-gray-50 hover:text-gray-800"
+                            >
+                                <ArrowLeft size={18} />
+                            </button>
+                        )}
 
-                    {subtitle && (
-                        <p className="mt-3 text-xs font-bold uppercase tracking-widest text-sm text-gray-500">
-                            {subtitle}
-                        </p>
+                        <h1 className="text-base font-extrabold tracking-[0.22em] text-gray-950">
+                            {subtitle}{" "}
+                            <span className="text-red-500">
+                                {title}
+                            </span>
+                        </h1>
+                    </div>
+
+                    {hasSearch && (
+                        <div className="mb-6 flex items-center gap-4">
+                            <SearchInput
+                                value={searchValue}
+                                onChange={onSearchChange}
+                                placeholder={
+                                    searchPlaceholder ?? `Pesquisar ${title.toLowerCase()}...`
+                                }
+                                className="flex-1"
+                            />
+
+                            {showFilterButton && (
+                                <button
+                                    type="button"
+                                    onClick={onToggleFilters}
+                                    className={`flex h-10 items-center gap-2 rounded-lg border px-7 text-sm font-bold shadow-sm transition ${
+                                        isFilterOpen
+                                            ? "border-red-300 bg-white text-red-500 hover:bg-red-50"
+                                            : "border-gray-200 bg-white text-gray-500 hover:bg-gray-50 hover:text-gray-800"
+                                    }`}
+                                >
+                                    <SlidersHorizontal size={16} />
+                                    Filtrar
+                                </button>
+                            )}
+                        </div>
                     )}
-                </div>
 
-                <div className={contentClassName}>{children}</div>
+                    {isFilterOpen && filterContent && (
+                        <div className="mb-6">
+                            {filterContent}
+                        </div>
+                    )}
+
+                    {children}
+                </div>
             </section>
 
             <BottomNav />

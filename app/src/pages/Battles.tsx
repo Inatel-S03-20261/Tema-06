@@ -2,8 +2,8 @@ import { useMemo, useState } from "react";
 
 import BattleTable from "../components/battles/BattleTable";
 import ClearFiltersButton from "../components/forms/ClearFiltersButton";
+import FilterPanel from "../components/forms/FilterPanel";
 import PageLayout from "../components/layout/PageLayout";
-import SearchInput from "../components/forms/SearchInput";
 import SelectInput from "../components/forms/SelectInput";
 import { batalhasMock } from "../services/battleService";
 import type { BattleStatus } from "../types/Battle";
@@ -21,16 +21,21 @@ const Battles = () => {
     const [jogadorFiltro, setJogadorFiltro] = useState("");
     const [statusFiltro, setStatusFiltro] =
         useState<BattleStatusFilter>("Todas");
-    const hasActiveFilters = jogadorFiltro !== "" || statusFiltro !== "Todas";
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+    const hasActiveFilters =
+        jogadorFiltro !== "" || statusFiltro !== "Todas";
 
     const batalhasFiltradas = useMemo(
         () =>
             batalhasMock.filter((battle) => {
                 const nomeJogadores =
                     `${battle.jogadorA.nome} ${battle.jogadorB.nome}`.toLowerCase();
+
                 const jogadorValido = nomeJogadores.includes(
                     jogadorFiltro.toLowerCase(),
                 );
+
                 const statusValido =
                     statusFiltro === "Todas" || battle.status === statusFiltro;
 
@@ -45,17 +50,22 @@ const Battles = () => {
     };
 
     return (
-        <PageLayout title="Batalhas">
-            <BattleTable
-                battles={batalhasFiltradas}
-                filters={
-                    <>
-                        <SearchInput
-                            label="Jogador"
-                            value={jogadorFiltro}
-                            onChange={setJogadorFiltro}
-                            placeholder="Pesquisar jogador..."
-                        />
+        <PageLayout
+            title="Batalhas"
+            subtitle="Gerenciar"
+            searchValue={jogadorFiltro}
+            searchPlaceholder="Pesquisar batalha..."
+            onSearchChange={setJogadorFiltro}
+            showFilterButton
+            isFilterOpen={isFilterOpen}
+            onToggleFilters={() => setIsFilterOpen((value) => !value)}
+            filterContent={
+                <FilterPanel>
+                    <p className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-gray-400">
+                        Filtros da Batalha
+                    </p>
+
+                    <div className="flex flex-col gap-4 md:flex-row md:items-end">
                         <SelectInput
                             label="Status"
                             value={statusFiltro}
@@ -64,13 +74,16 @@ const Battles = () => {
                                 setStatusFiltro(value as BattleStatusFilter)
                             }
                         />
+
                         <ClearFiltersButton
                             onClick={limparFiltros}
                             disabled={!hasActiveFilters}
                         />
-                    </>
-                }
-            />
+                    </div>
+                </FilterPanel>
+            }
+        >
+            <BattleTable battles={batalhasFiltradas} />
         </PageLayout>
     );
 };

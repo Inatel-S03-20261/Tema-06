@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 
 import ClearFiltersButton from "../components/forms/ClearFiltersButton";
+import FilterPanel from "../components/forms/FilterPanel";
 import PageLayout from "../components/layout/PageLayout";
-import SearchInput from "../components/forms/SearchInput";
 import SelectInput from "../components/forms/SelectInput";
 import TradeTable from "../components/trades/TradeTable";
 import { trocasMock } from "../services/tradeService";
@@ -21,6 +21,8 @@ const Trades = () => {
     const [statusFiltro, setStatusFiltro] =
         useState<TradeStatusFilter>("Todas");
     const [cartaFiltro, setCartaFiltro] = useState("");
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
+
     const hasActiveFilters = statusFiltro !== "Todas" || cartaFiltro !== "";
 
     const trocasFiltradas = useMemo(
@@ -28,6 +30,7 @@ const Trades = () => {
             trocasMock.filter((troca) => {
                 const statusValido =
                     statusFiltro === "Todas" || troca.status === statusFiltro;
+
                 const cartaValida = troca.cartasOfertadas.some((carta) =>
                     carta.nome
                         .toLowerCase()
@@ -45,17 +48,22 @@ const Trades = () => {
     };
 
     return (
-        <PageLayout title="Trocas">
-            <TradeTable
-                trades={trocasFiltradas}
-                filters={
-                    <>
-                        <SearchInput
-                            label="Carta"
-                            value={cartaFiltro}
-                            onChange={setCartaFiltro}
-                            placeholder="Filtrar por carta"
-                        />
+        <PageLayout
+            title="Trocas"
+            subtitle="Gerenciar"
+            searchValue={cartaFiltro}
+            searchPlaceholder="Pesquisar troca..."
+            onSearchChange={setCartaFiltro}
+            showFilterButton
+            isFilterOpen={isFilterOpen}
+            onToggleFilters={() => setIsFilterOpen((value) => !value)}
+            filterContent={
+                <FilterPanel>
+                    <p className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-gray-400">
+                        Filtros da Troca
+                    </p>
+
+                    <div className="flex flex-col gap-4 md:flex-row md:items-end">
                         <SelectInput
                             label="Status da troca"
                             value={statusFiltro}
@@ -64,13 +72,16 @@ const Trades = () => {
                                 setStatusFiltro(value as TradeStatusFilter)
                             }
                         />
+
                         <ClearFiltersButton
                             onClick={limparFiltros}
                             disabled={!hasActiveFilters}
                         />
-                    </>
-                }
-            />
+                    </div>
+                </FilterPanel>
+            }
+        >
+            <TradeTable trades={trocasFiltradas} />
         </PageLayout>
     );
 };
