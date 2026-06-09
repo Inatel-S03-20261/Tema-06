@@ -5,31 +5,6 @@ import PlayerDetailsSidebar from "../components/players/PlayerDetailsSidebar";
 import PlayerTable from "../components/players/PlayerTable";
 import { usePlayersFacade } from "../hooks/usePlayersFacade";
 
-type StatusFiltro =
-    | "Todos"
-    | "Ativos"
-    | "Admins"
-    | "Banidos";
-
-
-
-const filtrosStrategy: Record<
-    StatusFiltro,
-    (jogador: Player) => boolean
-> = {
-    Todos: () => true,
-
-    Ativos: (jogador) =>
-        !jogador.statusBanimento,
-
-    Admins: (jogador) =>
-        jogador.nivel === "Administrador",
-
-    Banidos: (jogador) =>
-        jogador.statusBanimento,
-};
-
-
 const Players = () => {
     const {
         filtro,
