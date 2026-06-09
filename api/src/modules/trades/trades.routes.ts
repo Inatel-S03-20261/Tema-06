@@ -8,9 +8,7 @@ import {
 } from './trades.schema.js'
 import * as tradesController from './trades.controller.js'
 
-export async function tradesRoutes(app: FastifyInstance) {
-  const router = app.withTypeProvider<ZodTypeProvider>()
-
+export async function tradesRoutes(router: FastifyInstance) {
   router.get('', {
     schema: {
       tags: ['trades'],
@@ -18,7 +16,7 @@ export async function tradesRoutes(app: FastifyInstance) {
       querystring: listTradesQuerySchema,
       response: { 200: tradeSchema.array() },
     },
-    handler: tradesController.list,
+    handler: tradesController.list.bind(tradesController),
   })
 
   router.get('/:id', {
@@ -28,7 +26,7 @@ export async function tradesRoutes(app: FastifyInstance) {
       params: tradeParamsSchema,
       response: { 200: tradeSchema },
     },
-    handler: tradesController.findById,
+    handler: tradesController.findById.bind(tradesController),
   })
 
   router.patch('/:id/status', {
@@ -39,6 +37,6 @@ export async function tradesRoutes(app: FastifyInstance) {
       body: updateTradeStatusBodySchema,
       response: { 200: tradeSchema },
     },
-    handler: tradesController.updateStatus,
+    handler: tradesController.updateStatus.bind(tradesController),
   })
 }

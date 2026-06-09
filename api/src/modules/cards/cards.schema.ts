@@ -22,3 +22,5 @@ export const listCardsQuerySchema = z.object({
 
 export type Card = z.infer<typeof cardSchema>
 export type CardRarity = z.infer<typeof cardRaritySchema>
+export type CardParams = z.infer<typeof cardParamsSchema>
+export type ListCardsQuery = z.infer<typeof listCardsQuerySchema>

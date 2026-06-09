@@ -30,3 +30,6 @@ export const updateTradeStatusBodySchema = z.object({
 
 export type Trade = z.infer<typeof tradeSchema>
 export type TradeStatus = z.infer<typeof tradeStatusSchema>
+export type TradeParams = z.infer<typeof tradeParamsSchema>
+export type ListTradesQuery = z.infer<typeof listTradesQuerySchema>
+export type UpdateTradeStatusBody = z.infer<typeof updateTradeStatusBodySchema>
