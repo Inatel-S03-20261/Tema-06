@@ -12,7 +12,7 @@ const Header = ({
     userInitial = "A",
 }: HeaderProps) => {
     return (
-        <header className="h-16 w-full bg-white text-gray-800 fixed top-0 left-0 z-50 flex items-center justify-between px-8 shadow-sm border-b border-gray-200">
+        <header className="h-16 w-full bg-white text-gray-800 fixed top-0 left-0 z-40 flex items-center justify-between px-8 shadow-sm border-b border-gray-200">
             <div className="flex items-center gap-4">
                 <img
                     src={pokeballLogo}

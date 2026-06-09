@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 
 import PageLayout from "../components/layout/PageLayout";
+import FilterPanel from "../components/forms/FilterPanel";
+import FilterChip from "../components/forms/FilterChip";
 import PlayerDetailsSidebar from "../components/players/PlayerDetailsSidebar";
 import PlayerTable from "../components/players/PlayerTable";
 import { jogadoresMock } from "../services/playerService";
@@ -111,9 +113,10 @@ const Players = () => {
     };
 
     return (
-        <PageLayout
-            title="Jogadores"
-            contentClassName="relative"
+        <div
+            className={`transition-all duration-300 ease-in-out ${
+                isDetailsOpen ? "pr-[50vw]" : "pr-0"
+            }`}
         >
             <PlayerTable
                 players={jogadoresFiltrados}
