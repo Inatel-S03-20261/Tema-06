@@ -15,7 +15,7 @@ export async function playersRoutes(router: FastifyInstance) {
       querystring: listPlayersQuerySchema,
       response: { 200: playerSchema.array() },
     },
-    handler: playersController.findAll,
+    handler: playersController.findAll.bind(playersController),
   })
 
   router.get('/:id', {
@@ -25,7 +25,7 @@ export async function playersRoutes(router: FastifyInstance) {
       params: playerParamsSchema,
       response: { 200: playerSchema },
     },
-    handler: playersController.findById,
+    handler: playersController.findById.bind(playersController),
   })
 
   router.patch('/:id/ban', {
@@ -36,6 +36,6 @@ export async function playersRoutes(router: FastifyInstance) {
       body: updateBanBodySchema,
       response: { 200: playerSchema },
     },
-    handler: playersController.banById,
+    handler: playersController.banById.bind(playersController),
   })
 }

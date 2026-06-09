@@ -1,22 +1,27 @@
 import { z } from 'zod'
 
-export const tradeStatusSchema = z.enum(['open', 'proposed', 'completed'])
+export const tradeStatusSchema = z.enum(['Aberta', 'Proposta', 'Finalizada'])
+
+const tradePlayerSchema = z.object({
+  id: z.string(),
+  nome: z.string(),
+})
 
 export const tradeSchema = z.object({
-  id: z.string().uuid(),
-  sourcePlayerId: z.string().uuid(),
-  targetPlayerId: z.string().uuid().optional(),
+  id: z.string(),
+  jogadorOrigem: tradePlayerSchema,
+  jogadorDestino: tradePlayerSchema.optional(),
   status: tradeStatusSchema,
-  createdAt: z.string().datetime(),
+  criadoEm: z.string(),
 })
 
 export const tradeParamsSchema = z.object({
-  id: z.string().uuid(),
+  id: z.string(),
 })
 
 export const listTradesQuerySchema = z.object({
   status: tradeStatusSchema.optional(),
-  playerId: z.string().uuid().optional(),
+  jogadorId: z.string().optional(),
 })
 
 export const updateTradeStatusBodySchema = z.object({

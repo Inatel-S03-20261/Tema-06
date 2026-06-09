@@ -12,13 +12,17 @@ type TradeParams = z.infer<typeof tradeParamsSchema>
 type UpdateStatusBody = z.infer<typeof updateTradeStatusBodySchema>
 
 export async function list(req: FastifyRequest<{ Querystring: ListQuery }>, reply: FastifyReply) {
-  // TODO
+  const { status, jogadorId } = req.query
+  const trades = await tradesService.list(status, jogadorId)
+  reply.send(trades)
 }
 
 export async function findById(req: FastifyRequest<{ Params: TradeParams }>, reply: FastifyReply) {
-  // TODO
+  const trade = await tradesService.findById(req.params.id)
+  reply.send(trade)
 }
 
 export async function updateStatus(req: FastifyRequest<{ Params: TradeParams; Body: UpdateStatusBody }>, reply: FastifyReply) {
-  // TODO
+  const trade = await tradesService.updateStatus(req.params.id, req.body.status)
+  reply.send(trade)
 }

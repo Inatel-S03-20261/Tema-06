@@ -1,23 +1,23 @@
 import { z } from 'zod'
 
-export const cardRaritySchema = z.enum(['common', 'rare', 'epic', 'legendary'])
+export const cardRaritySchema = z.enum(['Comum', 'Rara', 'Épica', 'Lendária'])
 
 export const cardSchema = z.object({
-  id: z.string().uuid(),
-  name: z.string(),
-  rarity: cardRaritySchema,
-  type: z.string(),
-  attack: z.number().int(),
-  defense: z.number().int(),
+  id: z.string(),
+  nome: z.string(),
+  raridade: cardRaritySchema,
+  tipo: z.string(),
+  ataque: z.number().int(),
+  defesa: z.number().int(),
 })
 
 export const cardParamsSchema = z.object({
-  id: z.string().uuid(),
+  id: z.string(),
 })
 
 export const listCardsQuerySchema = z.object({
-  name: z.string().optional(),
-  type: z.string().optional(),
+  nome: z.string().optional(),
+  tipo: z.string().optional(),
 })
 
 export type Card = z.infer<typeof cardSchema>

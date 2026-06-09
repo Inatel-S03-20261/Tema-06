@@ -6,7 +6,7 @@ import * as cardsController from './cards.controller.js'
 export async function cardsRoutes(app: FastifyInstance) {
   const router = app.withTypeProvider<ZodTypeProvider>()
 
-  router.get('/', {
+  router.get('', {
     schema: {
       tags: ['cards'],
       summary: 'List cards',

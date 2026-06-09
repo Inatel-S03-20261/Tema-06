@@ -1,31 +1,38 @@
 import { z } from 'zod'
 
-export const playerLevelSchema = z.enum(['user', 'admin'])
+export const playerLevelSchema = z.enum(['Usuário', 'Administrador'])
 
 export const playerSchema = z.object({
-  id: z.uuid(),
-  name: z.string(),
-  level: playerLevelSchema,
-  isBanned: z.boolean(),
-  createdAt: z.date(),
+  id: z.string(),
+  nome: z.string(),
+  nivel: playerLevelSchema,
+  statusBanimento: z.boolean(),
 })
 
 export const playerParamsSchema = z.object({
-  id: z.uuid(),
+  id: z.string(),
 })
 
 export const listPlayersQuerySchema = z.object({
-  name: z.string().optional(),
+  nome: z.string().optional(),
 })
 
 export const updateBanBodySchema = z.object({
-  isBanned: z.boolean(),
+  statusBanimento: z.boolean(),
 })
 
 export const updateLevelBodySchema = z.object({
-  level: playerLevelSchema,
+  nivel: playerLevelSchema,
 })
 
+export const RawPlayer = z.object({
+  id: z.string(),
+  name: z.string(),
+  level: z.enum(['user', 'admin']),
+  isBanned: z.boolean(),
+});
+
+export type RawPlayer = z.infer<typeof RawPlayer>
 export type Player = z.infer<typeof playerSchema>
 export type PlayerLevel = z.infer<typeof playerLevelSchema>
 export type ListQuery = z.infer<typeof listPlayersQuerySchema>

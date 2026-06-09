@@ -7,9 +7,12 @@ type ListQuery = z.infer<typeof listCardsQuerySchema>
 type CardParams = z.infer<typeof cardParamsSchema>
 
 export async function list(req: FastifyRequest<{ Querystring: ListQuery }>, reply: FastifyReply) {
-  // TODO
+  const { nome, tipo } = req.query
+  const cards = await cardsService.list(nome, tipo)
+  reply.send(cards)
 }
 
 export async function findById(req: FastifyRequest<{ Params: CardParams }>, reply: FastifyReply) {
-  // TODO
+  const card = await cardsService.findById(req.params.id)
+  reply.send(card)
 }
