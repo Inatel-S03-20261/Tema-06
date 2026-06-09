@@ -11,7 +11,7 @@ import * as tradesController from './trades.controller.js'
 export async function tradesRoutes(app: FastifyInstance) {
   const router = app.withTypeProvider<ZodTypeProvider>()
 
-  router.get('/', {
+  router.get('', {
     schema: {
       tags: ['trades'],
       summary: 'List trades',

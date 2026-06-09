@@ -8,7 +8,7 @@ import {
 import { playersController } from './players.controller.js'
 
 export async function playersRoutes(router: FastifyInstance) {
-  router.get('/', {
+  router.get('', {
     schema: {
       tags: ['players'],
       summary: 'List players',
