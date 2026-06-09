@@ -98,6 +98,10 @@ const PlayerDetailsSidebar = ({
                         </p>
 
                         <div className="mt-4 flex flex-wrap gap-2">
+                            <Badge tone={levelBadge.tone}>
+                                {levelBadge.label}
+                            </Badge>
+
                             <Badge tone={statusBadge.tone}>
                                 {statusBadge.label}
                             </Badge>
@@ -126,66 +130,66 @@ const PlayerDetailsSidebar = ({
             <div className="mt-5 min-h-0 flex-1 overflow-y-auto pr-1">
                 {activeTab === "Perfil" && (
                     <div className="grid gap-4 sm:grid-cols-2">
-                        <PanelCard className="flex min-h-24 flex-col justify-center gap-2 rounded-lg border-none !bg-gray-50 shadow-none">
-                            <span className="text-[11px] font-bold uppercase tracking-wide text-gray-500">
-                                ID
-                            </span>
+                    <PanelCard className="flex min-h-24 flex-col justify-center gap-2 rounded-lg border-none bg-gray-50 shadow-none">
+                        <span className="text-[11px] font-bold uppercase tracking-wide text-gray-500">
+                            ID
+                        </span>
 
-                            <strong className="text-sm font-bold text-gray-900">
-                                #{player.id}
-                            </strong>
+                        <strong className="text-sm font-bold text-gray-900">
+                            #{player.id}
+                        </strong>
 
-                            <span className="text-xs font-semibold text-gray-400">
-                                Identificador
-                            </span>
-                        </PanelCard>
+                        <span className="text-xs font-semibold text-gray-400">
+                            Identificador
+                        </span>
+                    </PanelCard>
 
-                        <PanelCard className="flex min-h-24 flex-col justify-center gap-2 rounded-lg border-none !bg-gray-50 shadow-none">
-                            <span className="text-[11px] font-bold uppercase tracking-wide text-gray-500">
-                                Role
-                            </span>
+                    <PanelCard className="flex min-h-24 flex-col justify-center gap-2 rounded-lg border-none bg-gray-50 shadow-none">
+                        <span className="text-[11px] font-bold uppercase tracking-wide text-gray-500">
+                            Role
+                        </span>
 
-                            <strong className="text-sm font-bold text-gray-900">
-                                {player.nivel === "Administrador" ? "ADMIN" : "USER"}
-                            </strong>
+                        <strong className="text-sm font-bold text-gray-900">
+                            {player.nivel === "Administrador" ? "ADMIN" : "USER"}
+                        </strong>
 
-                            <span className="text-xs font-semibold text-gray-400">
-                                Permissão
-                            </span>
-                        </PanelCard>
+                        <span className="text-xs font-semibold text-gray-400">
+                            Permissão
+                        </span>
+                    </PanelCard>
 
-                        <PanelCard className="flex min-h-24 flex-col justify-center gap-2 rounded-lg border-none !bg-gray-50 shadow-none">
-                            <span className="text-[11px] font-bold uppercase tracking-wide text-gray-500">
-                                Status
-                            </span>
+                    <PanelCard className="flex min-h-24 flex-col justify-center gap-2 rounded-lg border-none bg-gray-50 shadow-none">
+                        <span className="text-[11px] font-bold uppercase tracking-wide text-gray-500">
+                            Status
+                        </span>
 
-                            <strong
-                                className={`text-sm font-bold ${
-                                    player.statusBanimento ? "text-red-500" : "text-green-600"
-                                }`}
-                            >
-                                {player.statusBanimento ? "Banido" : "Ativo"}
-                            </strong>
+                        <strong
+                            className={`text-sm font-bold ${
+                                player.statusBanimento ? "text-red-500" : "text-green-600"
+                            }`}
+                        >
+                            {player.statusBanimento ? "Banido" : "Ativo"}
+                        </strong>
 
-                            <span className="text-xs font-semibold text-gray-400">
-                                Conta
-                            </span>
-                        </PanelCard>
+                        <span className="text-xs font-semibold text-gray-400">
+                            Conta
+                        </span>
+                    </PanelCard>
 
-                        <PanelCard className="flex min-h-24 flex-col justify-center gap-2 rounded-lg border-none !bg-gray-50 shadow-none">
-                            <span className="text-[11px] font-bold uppercase tracking-wide text-gray-500">
-                                Criado em
-                            </span>
+                    <PanelCard className="flex min-h-24 flex-col justify-center gap-2 rounded-lg border-none bg-gray-50 shadow-none">
+                        <span className="text-[11px] font-bold uppercase tracking-wide text-gray-500">
+                            Criado em
+                        </span>
 
-                            <strong className="text-sm font-bold text-gray-900">
-                                12/05/2024
-                            </strong>
+                        <strong className="text-sm font-bold text-gray-900">
+                            12/05/2024
+                        </strong>
 
-                            <span className="text-xs font-semibold text-gray-400">
-                                Data de Registro
-                            </span>
-                        </PanelCard>
-                    </div>
+                        <span className="text-xs font-semibold text-gray-400">
+                            Data de Registro
+                        </span>
+                    </PanelCard>
+                </div>
                 )}
 
                 {activeTab === "Batalhas" && <BattleTable battles={battles} />}

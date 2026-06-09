@@ -1,97 +1,33 @@
-import { useEffect, useMemo, useState } from "react";
-
 import PageLayout from "../components/layout/PageLayout";
 import FilterPanel from "../components/forms/FilterPanel";
 import FilterChip from "../components/forms/FilterChip";
 import PlayerDetailsSidebar from "../components/players/PlayerDetailsSidebar";
 import PlayerTable from "../components/players/PlayerTable";
-import { jogadoresMock } from "../services/playerService";
-import type { Player } from "../types/Player";
+import { usePlayersFacade } from "../hooks/usePlayersFacade";
 
 const Players = () => {
-    const [jogadores, setJogadores] = useState<Player[]>(jogadoresMock);
-    const [filtro, setFiltro] = useState("");
-    const [selectedPlayerId, setSelectedPlayerId] = useState<string>();
-    const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-    const [isFilterOpen, setIsFilterOpen] = useState(false);
-    const [statusFiltro, setStatusFiltro] = useState<
-        "Todos" | "Ativos" | "Admins" | "Inativos" | "Banidos"
-    >("Todos");
+    const {
+        filtro,
+        setFiltro,
 
-    const jogadoresFiltrados = useMemo(
-        () =>
-            jogadores.filter((jogador) => {
-                const correspondePesquisa = jogador.nome
-                    .toLowerCase()
-                    .includes(filtro.toLowerCase());
+        statusFiltro,
+        setStatusFiltro,
+        statusOptions,
 
-                const correspondeStatus =
-                    statusFiltro === "Todos" ||
-                    (statusFiltro === "Ativos" && !jogador.statusBanimento) ||
-                    (statusFiltro === "Admins" &&
-                        jogador.nivel === "Administrador") ||
-                    (statusFiltro === "Banidos" && jogador.statusBanimento) ||
-                    (statusFiltro === "Inativos" &&
-                        "ativo" in jogador &&
-                        jogador.ativo === false);
+        jogadoresFiltrados,
+        selectedPlayer,
+        selectedPlayerId,
 
-                return correspondePesquisa && correspondeStatus;
-            }),
-        [filtro, jogadores, statusFiltro],
-    );
-    const selectedPlayer = jogadoresFiltrados.find(
-        (jogador) => jogador.id === selectedPlayerId,
-    );
+        isDetailsOpen,
+        isFilterOpen,
 
-    useEffect(() => {
-        const hasSelectedPlayer = jogadoresFiltrados.some(
-            (jogador) => jogador.id === selectedPlayerId,
-        );
+        selecionarJogador,
+        fecharDetalhes,
+        alternarFiltros,
 
-        if (!hasSelectedPlayer) {
-            setSelectedPlayerId(jogadoresFiltrados[0]?.id);
-        }
-    }, [jogadoresFiltrados, selectedPlayerId]);
-
-    const selecionarJogador = (id: string) => {
-        setSelectedPlayerId(id);
-        setIsDetailsOpen(true);
-    };
-
-    const alterarBanimento = (id: string) => {
-        const jogadoresAtualizados = jogadores.map((jogador) => {
-            if (jogador.id === id) {
-                return {
-                    ...jogador,
-                    statusBanimento: !jogador.statusBanimento,
-                };
-            }
-
-            return jogador;
-        });
-
-        setJogadores(jogadoresAtualizados);
-    };
-
-    const alterarNivel = (id: string) => {
-        const jogadoresAtualizados = jogadores.map((jogador) => {
-            if (jogador.id === id) {
-                const novoNivel: Player["nivel"] =
-                    jogador.nivel === "Administrador"
-                        ? "Usuário"
-                        : "Administrador";
-
-                return {
-                    ...jogador,
-                    nivel: novoNivel,
-                };
-            }
-
-            return jogador;
-        });
-
-        setJogadores(jogadoresAtualizados);
-    };
+        alterarBanimento,
+        alterarNivel,
+    } = usePlayersFacade();
 
     return (
         <div
@@ -108,7 +44,7 @@ const Players = () => {
                 onSearchChange={setFiltro}
                 showFilterButton
                 isFilterOpen={isFilterOpen}
-                onToggleFilters={() => setIsFilterOpen((value) => !value)}
+                onToggleFilters={alternarFiltros}
                 filterContent={
                     <FilterPanel>
                         <p className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-gray-400">
@@ -116,26 +52,15 @@ const Players = () => {
                         </p>
 
                         <div className="flex flex-wrap gap-3">
-                            {["Todos", "Ativos", "Admins", "Inativos", "Banidos"].map(
-                                (status) => (
-                                    <FilterChip
-                                        key={status}
-                                        active={statusFiltro === status}
-                                        onClick={() =>
-                                            setStatusFiltro(
-                                                status as
-                                                    | "Todos"
-                                                    | "Ativos"
-                                                    | "Admins"
-                                                    | "Inativos"
-                                                    | "Banidos",
-                                            )
-                                        }
-                                    >
-                                        {status}
-                                    </FilterChip>
-                                ),
-                            )}
+                            {statusOptions.map((status) => (
+                                <FilterChip
+                                    key={status}
+                                    active={statusFiltro === status}
+                                    onClick={() => setStatusFiltro(status)}
+                                >
+                                    {status}
+                                </FilterChip>
+                            ))}
                         </div>
                     </FilterPanel>
                 }
@@ -156,7 +81,7 @@ const Players = () => {
             >
                 <PlayerDetailsSidebar
                     player={selectedPlayer}
-                    onClose={() => setIsDetailsOpen(false)}
+                    onClose={fecharDetalhes}
                 />
             </div>
         </div>
