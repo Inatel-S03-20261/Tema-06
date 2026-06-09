@@ -9,12 +9,22 @@ import Tooltip from "../ui/Tooltip";
 import type { Player } from "../../types/Player";
 import type { BadgeTone } from "../ui/Badge";
 
+type StatusFiltro =
+    | "Todos"
+    | "Ativos"
+    | "Admins"
+    | "Banidos";
+
 type PlayerTableProps = {
     players: Player[];
     filter: string;
+    statusFiltro: StatusFiltro;
     selectedPlayerId?: string;
     hasActiveFilters: boolean;
     onFilterChange: (value: string) => void;
+    onStatusFilterChange: (
+        value: StatusFiltro,
+    ) => void;
     onClearFilters: () => void;
     onSelectPlayer: (id: string) => void;
     onToggleBan: (id: string) => void;
@@ -142,9 +152,11 @@ const PlayerRow = ({
 const PlayerTable = ({
     players,
     filter,
+    statusFiltro,
     selectedPlayerId,
     hasActiveFilters,
     onFilterChange,
+    onStatusFilterChange,
     onClearFilters,
     onSelectPlayer,
     onToggleBan,
@@ -169,6 +181,20 @@ const PlayerTable = ({
                         onChange={onFilterChange}
                         placeholder="Pesquisar jogador..."
                     />
+                    <select
+                        value={statusFiltro}
+                        onChange={(e) =>
+                            onStatusFilterChange(
+                                e.target.value as StatusFiltro,
+                            )
+                        }
+                        className="rounded-md border border-gray-300 px-3 py-2 text-sm"
+                    >
+                        <option value="Todos">Todos</option>
+                        <option value="Ativos">Ativos</option>
+                        <option value="Admins">Admins</option>
+                        <option value="Banidos">Banidos</option>
+                    </select>
                     <ClearFiltersButton
                         onClick={onClearFilters}
                         disabled={!hasActiveFilters}

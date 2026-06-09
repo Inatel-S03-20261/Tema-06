@@ -6,19 +6,55 @@ import PlayerTable from "../components/players/PlayerTable";
 import { jogadoresMock } from "../services/playerService";
 import type { Player } from "../types/Player";
 
+type StatusFiltro =
+    | "Todos"
+    | "Ativos"
+    | "Admins"
+    | "Banidos";
+
+
+
+const filtrosStrategy: Record<
+    StatusFiltro,
+    (jogador: Player) => boolean
+> = {
+    Todos: () => true,
+
+    Ativos: (jogador) =>
+        !jogador.statusBanimento,
+
+    Admins: (jogador) =>
+        jogador.nivel === "Administrador",
+
+    Banidos: (jogador) =>
+        jogador.statusBanimento,
+};
+
+
 const Players = () => {
     const [jogadores, setJogadores] = useState<Player[]>(jogadoresMock);
     const [filtro, setFiltro] = useState("");
+    const [statusFiltro, setStatusFiltro] = useState<StatusFiltro>("Todos");
     const [selectedPlayerId, setSelectedPlayerId] = useState<string>();
     const [isDetailsOpen, setIsDetailsOpen] = useState(false);
     const hasActiveFilters = filtro !== "";
-
     const jogadoresFiltrados = useMemo(
-        () =>
-            jogadores.filter((jogador) =>
-                jogador.nome.toLowerCase().includes(filtro.toLowerCase()),
-            ),
-        [filtro, jogadores],
+    () =>
+        jogadores.filter((jogador) => {
+            const correspondePesquisa =
+                jogador.nome
+                    .toLowerCase()
+                    .includes(filtro.toLowerCase());
+
+            const correspondeStatus =
+                filtrosStrategy[statusFiltro](jogador);
+
+            return (
+                correspondePesquisa &&
+                correspondeStatus
+            );
+        }),
+    [filtro, jogadores, statusFiltro],
     );
     const selectedPlayer = jogadoresFiltrados.find(
         (jogador) => jogador.id === selectedPlayerId,
@@ -82,6 +118,8 @@ const Players = () => {
             <PlayerTable
                 players={jogadoresFiltrados}
                 filter={filtro}
+                statusFiltro={statusFiltro}
+                onStatusFilterChange={setStatusFiltro}
                 selectedPlayerId={isDetailsOpen ? selectedPlayerId : undefined}
                 hasActiveFilters={hasActiveFilters}
                 onFilterChange={setFiltro}
