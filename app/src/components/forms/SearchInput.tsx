@@ -1,7 +1,9 @@
+import { Search } from "lucide-react";
+
 import FieldLabel from "./FieldLabel";
 
 type SearchInputProps = {
-    label: string;
+    label?: string;
     value: string;
     onChange: (value: string) => void;
     placeholder: string;
@@ -16,15 +18,23 @@ const SearchInput = ({
     className = "",
 }: SearchInputProps) => {
     return (
-        <label className={`flex w-full max-w-md flex-col gap-1 ${className}`.trim()}>
-            <FieldLabel>{label}</FieldLabel>
-            <input
-                type="text"
-                placeholder={placeholder}
-                value={value}
-                onChange={(event) => onChange(event.target.value)}
-                className="h-11 w-full rounded-lg border border-gray-200 bg-gray-100 px-4 text-sm text-gray-700 outline-none transition placeholder:text-gray-400 focus:border-red-300 focus:bg-white focus:ring-2 focus:ring-red-100"
-            />
+        <label className={`flex w-full flex-col gap-1 ${className}`.trim()}>
+            {label && <FieldLabel>{label}</FieldLabel>}
+
+            <div className="relative">
+                <Search
+                    size={16}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300"
+                />
+
+                <input
+                    type="text"
+                    placeholder={placeholder}
+                    value={value}
+                    onChange={(event) => onChange(event.target.value)}
+                    className="h-10 w-full rounded-lg border border-gray-200 bg-white pl-11 pr-4 text-sm font-medium text-gray-700 outline-none transition placeholder:text-gray-300 focus:border-red-300 focus:ring-2 focus:ring-red-100"
+                />
+            </div>
         </label>
     );
 };

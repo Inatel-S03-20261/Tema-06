@@ -2,8 +2,8 @@ import { useMemo, useState } from "react";
 
 import CardTable from "../components/cards/CardTable";
 import ClearFiltersButton from "../components/forms/ClearFiltersButton";
+import FilterPanel from "../components/forms/FilterPanel";
 import PageLayout from "../components/layout/PageLayout";
-import SearchInput from "../components/forms/SearchInput";
 import SelectInput from "../components/forms/SelectInput";
 import { cartasMock } from "../services/cardService";
 
@@ -13,6 +13,7 @@ const Cards = () => {
     const [nomeFiltro, setNomeFiltro] = useState("");
     const [tipoFiltro, setTipoFiltro] = useState<CardFilter>("Todos");
     const [raridadeFiltro, setRaridadeFiltro] = useState<CardFilter>("Todos");
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
 
     const tipoOptions = useMemo(
         () => [
@@ -21,6 +22,7 @@ const Cards = () => {
         ],
         [],
     );
+
     const raridadeOptions = useMemo(
         () => [
             "Todos",
@@ -28,6 +30,7 @@ const Cards = () => {
         ],
         [],
     );
+
     const hasActiveFilters =
         nomeFiltro !== "" ||
         tipoFiltro !== "Todos" ||
@@ -39,8 +42,10 @@ const Cards = () => {
                 const nomeValido = card.nome
                     .toLowerCase()
                     .includes(nomeFiltro.toLowerCase());
+
                 const tipoValido =
                     tipoFiltro === "Todos" || card.tipo === tipoFiltro;
+
                 const raridadeValida =
                     raridadeFiltro === "Todos" ||
                     card.raridade === raridadeFiltro;
@@ -57,36 +62,45 @@ const Cards = () => {
     };
 
     return (
-        <PageLayout title="Cartas">
-            <CardTable
-                cards={cartasFiltradas}
-                filters={
-                    <>
-                        <SearchInput
-                            label="Carta"
-                            value={nomeFiltro}
-                            onChange={setNomeFiltro}
-                            placeholder="Pesquisar carta..."
-                        />
+        <PageLayout
+            title="Cartas"
+            subtitle="Gerenciar"
+            searchValue={nomeFiltro}
+            searchPlaceholder="Pesquisar carta..."
+            onSearchChange={setNomeFiltro}
+            showFilterButton
+            isFilterOpen={isFilterOpen}
+            onToggleFilters={() => setIsFilterOpen((value) => !value)}
+            filterContent={
+                <FilterPanel>
+                    <p className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-gray-400">
+                        Filtros da Carta
+                    </p>
+
+                    <div className="flex flex-col gap-4 md:flex-row md:items-end">
                         <SelectInput
                             label="Tipo"
                             value={tipoFiltro}
-                            options={tipoOptions}
                             onChange={setTipoFiltro}
+                            options={tipoOptions}
                         />
+
                         <SelectInput
                             label="Raridade"
                             value={raridadeFiltro}
-                            options={raridadeOptions}
                             onChange={setRaridadeFiltro}
+                            options={raridadeOptions}
                         />
+
                         <ClearFiltersButton
                             onClick={limparFiltros}
                             disabled={!hasActiveFilters}
                         />
-                    </>
-                }
-            />
+                    </div>
+                </FilterPanel>
+            }
+        >
+            <CardTable cards={cartasFiltradas} />
         </PageLayout>
     );
 };
