@@ -1,6 +1,6 @@
-import { IPlayerRepository, IPlayerService } from "./players.interface";
+import type { IPlayerRepository, IPlayerService } from "./players.interface";
 import { playersRepository } from "./players.repository";
-import { Player } from "./players.schema";
+import type { Player } from "./players.schema";
 
 class PlayersService implements IPlayerService {
   constructor(private repo: IPlayerRepository) {}

@@ -1,5 +1,5 @@
 import Fastify from 'fastify'
-import { serializerCompiler, validatorCompiler, ZodTypeProvider } from 'fastify-type-provider-zod'
+import { serializerCompiler, validatorCompiler, type ZodTypeProvider } from 'fastify-type-provider-zod'
 import { registerPlugins } from './plugins/index.js'
 import { playersRoutes } from './modules/players/players.routes.js'
 import { cardsRoutes } from './modules/cards/cards.routes.js'

@@ -1,5 +1,5 @@
-import { FastifyReply, FastifyRequest } from "fastify";
-import { Player, PlayerParams, UpdateBanBody } from "./players.schema"
+import type { FastifyReply, FastifyRequest } from "fastify";
+import type { Player, PlayerParams, UpdateBanBody } from "./players.schema"
 
 export interface IPlayerRepository {
   findAll(name?: string): Promise<Player[]>;

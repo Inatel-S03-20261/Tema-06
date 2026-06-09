@@ -1,5 +1,5 @@
-import { IPlayersAdapter } from "./players.interface";
-import { Player, RawPlayer } from "./players.schema";
+import type { IPlayersAdapter } from "./players.interface";
+import type { Player, RawPlayer } from "./players.schema";
 
 const rawPlayers: RawPlayer[] = [
   { id: "1", name: "João", level: "user", isBanned: false },

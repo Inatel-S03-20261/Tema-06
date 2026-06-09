@@ -1,7 +1,7 @@
-import { IPlayerRepository, IPlayersAdapter, IPlayersMapper } from "./players.interface";
+import type { IPlayerRepository, IPlayersAdapter, IPlayersMapper } from "./players.interface";
 import { playersAdapter } from "./players.adapter";
 import { playersMapper } from "./players.mapper";
-import { Player } from "./players.schema";
+import type { Player } from "./players.schema";
 
 class PlayersRepository implements IPlayerRepository {
   constructor(

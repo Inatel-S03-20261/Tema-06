@@ -1,7 +1,7 @@
-import { FastifyReply, FastifyRequest } from "fastify";
-import { IPlayerService, IPlayersController } from "./players.interface";
+import type { FastifyReply, FastifyRequest } from "fastify";
+import type { IPlayerService, IPlayersController } from "./players.interface";
 import { playersService } from "./players.service";
-import { ListQuery, Player, PlayerParams, UpdateBanBody } from "./players.schema";
+import type { ListQuery, Player, PlayerParams, UpdateBanBody } from "./players.schema";
 
 class PlayersController implements IPlayersController {
   constructor(private service: IPlayerService) {}

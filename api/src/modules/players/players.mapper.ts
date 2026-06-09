@@ -1,5 +1,5 @@
-import { IPlayersMapper } from "./players.interface";
-import { Player, PlayerLevel, RawPlayer } from "./players.schema";
+import type { IPlayersMapper } from "./players.interface";
+import type { Player, PlayerLevel, RawPlayer } from "./players.schema";
 
 class PlayersMapper implements IPlayersMapper {
   toInternal(raw: unknown): Player {

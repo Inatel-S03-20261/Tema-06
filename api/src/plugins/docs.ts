@@ -4,7 +4,7 @@ import fastifySwagger from '@fastify/swagger'
 import scalarApiReference from '@scalar/fastify-api-reference'
 import { jsonSchemaTransform } from 'fastify-type-provider-zod'
 
-export const docsPlugin = fp(async function (app: FastifyInstance): Promise<void> {
+export const docsPlugin = fp(async (app: FastifyInstance): Promise<void> => {
   await app.register(fastifySwagger, {
     transform: jsonSchemaTransform,
     openapi: {
