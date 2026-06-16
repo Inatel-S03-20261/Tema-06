@@ -1,5 +1,5 @@
 import type { FastifyRequest, FastifyReply } from 'fastify'
-import * as cardsService from './cards.service.js'
+import { cardsService } from './cards.service.js'
 import type { z } from 'zod'
 import type { listCardsQuerySchema, cardParamsSchema } from './cards.schema.js'
 

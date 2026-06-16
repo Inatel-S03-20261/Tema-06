@@ -1,5 +1,5 @@
 import type { FastifyRequest, FastifyReply } from 'fastify'
-import * as tradesService from './trades.service.js'
+import { tradesService } from './trades.service.js'
 import type { z } from 'zod'
 import type {
   listTradesQuerySchema,
