@@ -1,6 +1,3 @@
-// Banco mockado em memória (sem Postgres). Enquanto a API roda apenas com mocks,
-// `db` é o store definido em ../db/mock.ts. Para voltar ao Postgres real, troque
-// este re-export pela conexão Drizzle comentada abaixo.
 export { db } from '../db/mock.js'
 
 // import postgres from 'postgres'

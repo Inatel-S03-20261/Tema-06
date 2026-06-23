@@ -9,4 +9,5 @@ export type Trade = {
     jogadorDestino?: Pick<Player, "id" | "nome">;
     cartasOfertadas: Card[];
     status: TradeStatus;
+    criadoEm: string;
 };

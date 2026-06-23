@@ -1,92 +1,81 @@
-import { useEffect, useState } from "react";
-import {
-    Users,
-    Layers,
-    Swords,
-    ArrowLeftRight,
-} from "lucide-react";
+import { ArrowLeftRight, Layers, Swords, Users } from "lucide-react";
 
-import HomeCard from "../components/home/HomeCard";
+import ActivityAreaChart from "../components/home/ActivityAreaChart";
+import CardTypesBarChart from "../components/home/CardTypesBarChart";
+import DashboardStatCard from "../components/home/DashboardStatCard";
+import PlayerStatusDonut from "../components/home/PlayerStatusDonut";
+import RecentActivityFeed from "../components/home/RecentActivityFeed";
+import TopTradedCards from "../components/home/TopTradedCards";
 import PageLayout from "../components/layout/PageLayout";
-import { listarBatalhas } from "../services/battleService";
-import { listarCartas } from "../services/cardService";
-import { listarJogadores } from "../services/playerService";
-import { listarTrocas } from "../services/tradeService";
+import { useDashboardFacade } from "../hooks/useDashboardFacade";
 
 const Home = () => {
     const userName = "Administrador";
-    const [playersCount, setPlayersCount] = useState(0);
-    const [cardsCount, setCardsCount] = useState(0);
-    const [battlesCount, setBattlesCount] = useState(0);
-    const [tradesCount, setTradesCount] = useState(0);
-
-    useEffect(() => {
-        listarJogadores()
-            .then((jogadores) => setPlayersCount(jogadores.length))
-            .catch((erro) => console.error("Erro ao carregar jogadores", erro));
-        listarCartas()
-            .then((cartas) => setCardsCount(cartas.length))
-            .catch((erro) => console.error("Erro ao carregar cartas", erro));
-        listarBatalhas()
-            .then((batalhas) => setBattlesCount(batalhas.length))
-            .catch((erro) => console.error("Erro ao carregar batalhas", erro));
-        listarTrocas()
-            .then((trocas) => setTradesCount(trocas.length))
-            .catch((erro) => console.error("Erro ao carregar trocas", erro));
-    }, []);
+    const { dashboard, isLoading } = useDashboardFacade();
+    const { stats } = dashboard;
 
     return (
         <PageLayout
-            title={``}
+            title=""
             showPageHeader={false}
             subtitle="Gerenciar"
-            contentClassName="grid gap-4 md:grid-cols-2"
+            contentClassName="flex flex-col gap-4"
         >
-            <h1 className="md:col-span-2 text-base font-extrabold tracking-[0.22em] text-gray-950">
-                Bem-vindo,{" "}
-                <span className="text-red-500">
-                    {userName} 👋
-                </span>
-            </h1>
-            <HomeCard
-                title="Jogadores"
-                description="Gerencia treinadores, perfis e status de conta"
-                to="/jogadores"
-                badge={`${playersCount.toLocaleString("pt-BR")} ativos`}
-                icon={Users}
-                iconClassName="bg-red-100 text-red-500"
-                badgeClassName="bg-red-100 text-red-500"
-            />
+            <header>
+                <h1 className="text-2xl font-extrabold tracking-wide text-gray-950">
+                    Bem-vindo, {userName}
+                </h1>
+                <p className="text-sm text-gray-500">
+                    {isLoading
+                        ? "Carregando métricas..."
+                        : "Visão geral do sistema em tempo real"}
+                </p>
+            </header>
 
-            <HomeCard
-                title="Cartas"
-                description="Catálogo completo de pokemons e raridades"
-                to="/cartas"
-                badge={`${cardsCount.toLocaleString("pt-BR")} cartas`}
-                icon={Layers}
-                iconClassName="bg-indigo-100 text-indigo-500"
-                badgeClassName="bg-indigo-100 text-indigo-600"
-            />
+            <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                <DashboardStatCard
+                    title="Jogadores"
+                    value={stats.jogadores.total}
+                    subtitle={`${stats.jogadores.ativos} ativos · ${stats.jogadores.banidos} banidos`}
+                    icon={Users}
+                    iconClassName="bg-red-100 text-red-500"
+                />
+                <DashboardStatCard
+                    title="Trocas"
+                    value={stats.trocas.total}
+                    subtitle={`${stats.trocas.abertas} abertas · ${stats.trocas.propostas} propostas`}
+                    icon={ArrowLeftRight}
+                    iconClassName="bg-green-100 text-green-600"
+                />
+                <DashboardStatCard
+                    title="Batalhas"
+                    value={stats.batalhas.total}
+                    subtitle={`${stats.batalhas.agendadas} agendadas · ${stats.batalhas.finalizadas} finalizadas`}
+                    icon={Swords}
+                    iconClassName="bg-yellow-100 text-yellow-600"
+                />
+                <DashboardStatCard
+                    title="Cartas"
+                    value={stats.cartas.total}
+                    subtitle="Catálogo de pokémons"
+                    icon={Layers}
+                    iconClassName="bg-indigo-100 text-indigo-500"
+                />
+            </section>
 
-            <HomeCard
-                title="Batalhas"
-                description="Histórico e gerenciamento de batalhas"
-                to="/batalhas"
-                badge={`${battlesCount.toLocaleString("pt-BR")} hoje`}
-                icon={Swords}
-                iconClassName="bg-yellow-100 text-yellow-600"
-                badgeClassName="bg-yellow-100 text-yellow-700"
-            />
+            <section className="grid gap-4 lg:grid-cols-3">
+                <div className="lg:col-span-2">
+                    <ActivityAreaChart data={dashboard.atividadeMensal} />
+                </div>
+                <PlayerStatusDonut data={dashboard.statusJogadores} />
+            </section>
 
-            <HomeCard
-                title="Trocas"
-                description="Pedidos de troca e histórico"
-                to="/trocas"
-                badge={`${tradesCount.toLocaleString("pt-BR")} hoje`}
-                icon={ArrowLeftRight}
-                iconClassName="bg-green-100 text-green-600"
-                badgeClassName="bg-green-100 text-green-700"
-            />
+            <section className="grid gap-4 lg:grid-cols-2">
+                <CardTypesBarChart data={dashboard.tiposDeCartas} />
+                <TopTradedCards data={dashboard.maisNegociados} />
+            </section>
+
+            <RecentActivityFeed data={dashboard.atividadeRecente} />
         </PageLayout>
     );
 };

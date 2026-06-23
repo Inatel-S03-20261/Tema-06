@@ -28,6 +28,7 @@ class PlayersAdapter implements IPlayersAdapter {
       name: player.nome,
       level: player.nivel === "Administrador" ? "admin" : "user",
       isBanned: player.statusBanimento,
+      isActive: player.ativo,
       createdAt: new Date().toISOString(),
     } as const;
 
@@ -45,6 +46,7 @@ class PlayersAdapter implements IPlayersAdapter {
         | "admin"
         | "user",
       isBanned: player.statusBanimento,
+      isActive: player.ativo,
       createdAt: existente?.createdAt ?? new Date().toISOString(),
     };
 

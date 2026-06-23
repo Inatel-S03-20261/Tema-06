@@ -5,4 +5,6 @@ export type Player = {
     nome: string;
     nivel: PlayerLevel;
     statusBanimento: boolean;
+    ativo: boolean;
+    criadoEm: string;
 };

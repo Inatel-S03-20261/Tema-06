@@ -3,12 +3,13 @@ import type { IBrokerConsumer, MessageHandler } from './broker.interface.js'
 import type { MessageContext } from './message.chain.js'
 
 export class RabbitMQConsumer implements IBrokerConsumer {
-  private connection: amqp.Connection | null = null
+  private connection: amqp.ChannelModel | null = null
   private channel: amqp.Channel | null = null
 
   async connect(): Promise<void> {
-    this.connection = await amqp.connect(process.env.BROKER_URL ?? 'amqp://localhost')
-    this.channel = await this.connection.createChannel()
+    const connection = await amqp.connect(process.env.BROKER_URL ?? 'amqp://localhost')
+    this.connection = connection
+    this.channel = await connection.createChannel()
   }
 
   async disconnect(): Promise<void> {
