@@ -1,12 +1,12 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import ClearFiltersButton from "../components/forms/ClearFiltersButton";
 import FilterPanel from "../components/forms/FilterPanel";
 import PageLayout from "../components/layout/PageLayout";
 import SelectInput from "../components/forms/SelectInput";
 import TradeTable from "../components/trades/TradeTable";
-import { trocasMock } from "../services/tradeService";
-import type { TradeStatus } from "../types/Trade";
+import { listarTrocas } from "../services/tradeService";
+import type { Trade, TradeStatus } from "../types/Trade";
 
 type TradeStatusFilter = "Todas" | TradeStatus;
 
@@ -18,16 +18,23 @@ const statusOptions: TradeStatusFilter[] = [
 ];
 
 const Trades = () => {
+    const [trocas, setTrocas] = useState<Trade[]>([]);
     const [statusFiltro, setStatusFiltro] =
         useState<TradeStatusFilter>("Todas");
     const [cartaFiltro, setCartaFiltro] = useState("");
     const [isFilterOpen, setIsFilterOpen] = useState(false);
 
+    useEffect(() => {
+        listarTrocas()
+            .then(setTrocas)
+            .catch((erro) => console.error("Erro ao carregar trocas", erro));
+    }, []);
+
     const hasActiveFilters = statusFiltro !== "Todas" || cartaFiltro !== "";
 
     const trocasFiltradas = useMemo(
         () =>
-            trocasMock.filter((troca) => {
+            trocas.filter((troca) => {
                 const statusValido =
                     statusFiltro === "Todas" || troca.status === statusFiltro;
 
@@ -39,7 +46,7 @@ const Trades = () => {
 
                 return statusValido && cartaValida;
             }),
-        [cartaFiltro, statusFiltro],
+        [trocas, cartaFiltro, statusFiltro],
     );
 
     const limparFiltros = () => {

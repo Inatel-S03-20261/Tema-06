@@ -2,6 +2,8 @@ import type { IPlayerRepository, IPlayersAdapter, IPlayersMapper } from "./playe
 import { playersAdapter } from "./players.adapter";
 import { playersMapper } from "./players.mapper";
 import type { Player } from "./players.schema";
+import * as cardsRepository from "../cards/cards.repository.js";
+import type { Card } from "../cards/cards.schema.js";
 
 class PlayersRepository implements IPlayerRepository {
   constructor(
@@ -17,6 +19,11 @@ class PlayersRepository implements IPlayerRepository {
   async findById(id: string): Promise<Player> {
     const raw = await this.adapter.fetchById(id);
     return this.mapper.toInternal(raw);
+  }
+
+  async findCards(id: string): Promise<Card[]> {
+    const ids = await this.adapter.fetchCardIds(id);
+    return Promise.all(ids.map((cardId) => cardsRepository.findById(cardId)));
   }
 
   async create(player: Player): Promise<Player> {

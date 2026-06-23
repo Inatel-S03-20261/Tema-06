@@ -1,12 +1,12 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import BattleTable from "../components/battles/BattleTable";
 import ClearFiltersButton from "../components/forms/ClearFiltersButton";
 import FilterPanel from "../components/forms/FilterPanel";
 import PageLayout from "../components/layout/PageLayout";
 import SelectInput from "../components/forms/SelectInput";
-import { batalhasMock } from "../services/battleService";
-import type { BattleStatus } from "../types/Battle";
+import { listarBatalhas } from "../services/battleService";
+import type { Battle, BattleStatus } from "../types/Battle";
 
 type BattleStatusFilter = "Todas" | BattleStatus;
 
@@ -18,17 +18,24 @@ const statusOptions: BattleStatusFilter[] = [
 ];
 
 const Battles = () => {
+    const [batalhas, setBatalhas] = useState<Battle[]>([]);
     const [jogadorFiltro, setJogadorFiltro] = useState("");
     const [statusFiltro, setStatusFiltro] =
         useState<BattleStatusFilter>("Todas");
     const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+    useEffect(() => {
+        listarBatalhas()
+            .then(setBatalhas)
+            .catch((erro) => console.error("Erro ao carregar batalhas", erro));
+    }, []);
 
     const hasActiveFilters =
         jogadorFiltro !== "" || statusFiltro !== "Todas";
 
     const batalhasFiltradas = useMemo(
         () =>
-            batalhasMock.filter((battle) => {
+            batalhas.filter((battle) => {
                 const nomeJogadores =
                     `${battle.jogadorA.nome} ${battle.jogadorB.nome}`.toLowerCase();
 
@@ -41,7 +48,7 @@ const Battles = () => {
 
                 return jogadorValido && statusValido;
             }),
-        [jogadorFiltro, statusFiltro],
+        [batalhas, jogadorFiltro, statusFiltro],
     );
 
     const limparFiltros = () => {

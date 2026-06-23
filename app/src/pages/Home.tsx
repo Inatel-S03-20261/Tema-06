@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
     Users,
     Layers,
@@ -7,17 +8,32 @@ import {
 
 import HomeCard from "../components/home/HomeCard";
 import PageLayout from "../components/layout/PageLayout";
-import { batalhasMock } from "../services/battleService";
-import { cartasMock } from "../services/cardService";
-import { jogadoresMock } from "../services/playerService";
-import { trocasMock } from "../services/tradeService";
+import { listarBatalhas } from "../services/battleService";
+import { listarCartas } from "../services/cardService";
+import { listarJogadores } from "../services/playerService";
+import { listarTrocas } from "../services/tradeService";
 
 const Home = () => {
     const userName = "Administrador";
-    const playersCount = jogadoresMock.length;
-    const cardsCount = cartasMock.length;
-    const battlesCount = batalhasMock.length;
-    const tradesCount = trocasMock.length;
+    const [playersCount, setPlayersCount] = useState(0);
+    const [cardsCount, setCardsCount] = useState(0);
+    const [battlesCount, setBattlesCount] = useState(0);
+    const [tradesCount, setTradesCount] = useState(0);
+
+    useEffect(() => {
+        listarJogadores()
+            .then((jogadores) => setPlayersCount(jogadores.length))
+            .catch((erro) => console.error("Erro ao carregar jogadores", erro));
+        listarCartas()
+            .then((cartas) => setCardsCount(cartas.length))
+            .catch((erro) => console.error("Erro ao carregar cartas", erro));
+        listarBatalhas()
+            .then((batalhas) => setBattlesCount(batalhas.length))
+            .catch((erro) => console.error("Erro ao carregar batalhas", erro));
+        listarTrocas()
+            .then((trocas) => setTradesCount(trocas.length))
+            .catch((erro) => console.error("Erro ao carregar trocas", erro));
+    }, []);
 
     return (
         <PageLayout

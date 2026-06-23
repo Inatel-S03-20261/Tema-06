@@ -1,6 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 
-import { jogadoresMock } from "../services/playerService";
+import {
+    alterarNivelJogador,
+    banirJogador,
+    listarJogadores,
+} from "../services/playerService";
 import type { Player } from "../types/Player";
 
 type StatusFiltro = "Todos" | "Ativos" | "Admins" | "Inativos" | "Banidos";
@@ -14,12 +18,18 @@ const statusOptions: StatusFiltro[] = [
 ];
 
 export const usePlayersFacade = () => {
-    const [jogadores, setJogadores] = useState<Player[]>(jogadoresMock);
+    const [jogadores, setJogadores] = useState<Player[]>([]);
     const [filtro, setFiltro] = useState("");
     const [selectedPlayerId, setSelectedPlayerId] = useState<string>();
     const [isDetailsOpen, setIsDetailsOpen] = useState(false);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [statusFiltro, setStatusFiltro] = useState<StatusFiltro>("Todos");
+
+    useEffect(() => {
+        listarJogadores()
+            .then(setJogadores)
+            .catch((erro) => console.error("Erro ao carregar jogadores", erro));
+    }, []);
 
     const jogadoresFiltrados = useMemo(
         () =>
@@ -43,19 +53,18 @@ export const usePlayersFacade = () => {
         [filtro, jogadores, statusFiltro],
     );
 
-    const selectedPlayer = jogadoresFiltrados.find(
+    // Seleção efetiva derivada no render (sem setState em effect): usa o jogador
+    // escolhido se ele ainda estiver na lista filtrada, senão cai no primeiro.
+    const hasSelectedPlayer = jogadoresFiltrados.some(
         (jogador) => jogador.id === selectedPlayerId,
     );
+    const effectiveSelectedId = hasSelectedPlayer
+        ? selectedPlayerId
+        : jogadoresFiltrados[0]?.id;
 
-    useEffect(() => {
-        const hasSelectedPlayer = jogadoresFiltrados.some(
-            (jogador) => jogador.id === selectedPlayerId,
-        );
-
-        if (!hasSelectedPlayer) {
-            setSelectedPlayerId(jogadoresFiltrados[0]?.id);
-        }
-    }, [jogadoresFiltrados, selectedPlayerId]);
+    const selectedPlayer = jogadoresFiltrados.find(
+        (jogador) => jogador.id === effectiveSelectedId,
+    );
 
     const selecionarJogador = (id: string) => {
         setSelectedPlayerId(id);
@@ -70,39 +79,42 @@ export const usePlayersFacade = () => {
         setIsFilterOpen((value) => !value);
     };
 
-    const alterarBanimento = (id: string) => {
-        setJogadores((jogadoresAtuais) =>
-            jogadoresAtuais.map((jogador) => {
-                if (jogador.id === id) {
-                    return {
-                        ...jogador,
-                        statusBanimento: !jogador.statusBanimento,
-                    };
-                }
+    const alterarBanimento = async (id: string) => {
+        const jogador = jogadores.find((item) => item.id === id);
+        if (!jogador) return;
 
-                return jogador;
-            }),
-        );
+        try {
+            const atualizado = await banirJogador(
+                id,
+                !jogador.statusBanimento,
+            );
+            setJogadores((jogadoresAtuais) =>
+                jogadoresAtuais.map((item) =>
+                    item.id === id ? atualizado : item,
+                ),
+            );
+        } catch (erro) {
+            console.error("Erro ao alterar banimento", erro);
+        }
     };
 
-    const alterarNivel = (id: string) => {
-        setJogadores((jogadoresAtuais) =>
-            jogadoresAtuais.map((jogador) => {
-                if (jogador.id === id) {
-                    const novoNivel: Player["nivel"] =
-                        jogador.nivel === "Administrador"
-                            ? "Usuário"
-                            : "Administrador";
+    const alterarNivel = async (id: string) => {
+        const jogador = jogadores.find((item) => item.id === id);
+        if (!jogador) return;
 
-                    return {
-                        ...jogador,
-                        nivel: novoNivel,
-                    };
-                }
+        const novoNivel: Player["nivel"] =
+            jogador.nivel === "Administrador" ? "Usuário" : "Administrador";
 
-                return jogador;
-            }),
-        );
+        try {
+            const atualizado = await alterarNivelJogador(id, novoNivel);
+            setJogadores((jogadoresAtuais) =>
+                jogadoresAtuais.map((item) =>
+                    item.id === id ? atualizado : item,
+                ),
+            );
+        } catch (erro) {
+            console.error("Erro ao alterar nível", erro);
+        }
     };
 
     return {
@@ -115,7 +127,7 @@ export const usePlayersFacade = () => {
 
         jogadoresFiltrados,
         selectedPlayer,
-        selectedPlayerId,
+        selectedPlayerId: effectiveSelectedId,
 
         isDetailsOpen,
         isFilterOpen,

@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { cardSchema } from '../cards/cards.schema.js'
 
 export const tradeStatusSchema = z.enum(['Aberta', 'Proposta', 'Finalizada'])
 
@@ -11,6 +12,7 @@ export const tradeSchema = z.object({
   id: z.string(),
   jogadorOrigem: tradePlayerSchema,
   jogadorDestino: tradePlayerSchema.optional(),
+  cartasOfertadas: cardSchema.array(),
   status: tradeStatusSchema,
   criadoEm: z.string(),
 })

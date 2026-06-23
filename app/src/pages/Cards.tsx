@@ -1,34 +1,42 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import CardTable from "../components/cards/CardTable";
 import ClearFiltersButton from "../components/forms/ClearFiltersButton";
 import FilterPanel from "../components/forms/FilterPanel";
 import PageLayout from "../components/layout/PageLayout";
 import SelectInput from "../components/forms/SelectInput";
-import { cartasMock } from "../services/cardService";
+import { listarCartas } from "../services/cardService";
+import type { Card } from "../types/Card";
 
 type CardFilter = "Todos" | string;
 
 const Cards = () => {
+    const [cartas, setCartas] = useState<Card[]>([]);
     const [nomeFiltro, setNomeFiltro] = useState("");
     const [tipoFiltro, setTipoFiltro] = useState<CardFilter>("Todos");
     const [raridadeFiltro, setRaridadeFiltro] = useState<CardFilter>("Todos");
     const [isFilterOpen, setIsFilterOpen] = useState(false);
 
+    useEffect(() => {
+        listarCartas()
+            .then(setCartas)
+            .catch((erro) => console.error("Erro ao carregar cartas", erro));
+    }, []);
+
     const tipoOptions = useMemo(
         () => [
             "Todos",
-            ...Array.from(new Set(cartasMock.map((card) => card.tipo))),
+            ...Array.from(new Set(cartas.map((card) => card.tipo))),
         ],
-        [],
+        [cartas],
     );
 
     const raridadeOptions = useMemo(
         () => [
             "Todos",
-            ...Array.from(new Set(cartasMock.map((card) => card.raridade))),
+            ...Array.from(new Set(cartas.map((card) => card.raridade))),
         ],
-        [],
+        [cartas],
     );
 
     const hasActiveFilters =
@@ -38,7 +46,7 @@ const Cards = () => {
 
     const cartasFiltradas = useMemo(
         () =>
-            cartasMock.filter((card) => {
+            cartas.filter((card) => {
                 const nomeValido = card.nome
                     .toLowerCase()
                     .includes(nomeFiltro.toLowerCase());
@@ -52,7 +60,7 @@ const Cards = () => {
 
                 return nomeValido && tipoValido && raridadeValida;
             }),
-        [nomeFiltro, raridadeFiltro, tipoFiltro],
+        [cartas, nomeFiltro, raridadeFiltro, tipoFiltro],
     );
 
     const limparFiltros = () => {
