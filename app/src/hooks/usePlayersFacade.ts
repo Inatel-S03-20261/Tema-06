@@ -45,8 +45,8 @@ export const usePlayersFacade = () => {
                         jogador.nivel === "Administrador") ||
                     (statusFiltro === "Banidos" && jogador.statusBanimento) ||
                     (statusFiltro === "Inativos" &&
-                        "ativo" in jogador &&
-                        jogador.ativo === false);
+                        !jogador.statusBanimento &&
+                        !jogador.ativo);
 
                 return correspondePesquisa && correspondeStatus;
             }),

@@ -7,6 +7,8 @@ export const playerSchema = z.object({
   nome: z.string(),
   nivel: playerLevelSchema,
   statusBanimento: z.boolean(),
+  ativo: z.boolean(),
+  criadoEm: z.string(),
 })
 
 export const playerParamsSchema = z.object({
@@ -30,6 +32,8 @@ export const RawPlayer = z.object({
   name: z.string(),
   level: z.enum(['user', 'admin']),
   isBanned: z.boolean(),
+  isActive: z.boolean(),
+  createdAt: z.string(),
 });
 
 export type RawPlayer = z.infer<typeof RawPlayer>

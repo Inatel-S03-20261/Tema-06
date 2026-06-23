@@ -12,6 +12,8 @@ class PlayersMapper implements IPlayersMapper {
       nome: r.name,
       nivel,
       statusBanimento: r.isBanned,
+      ativo: r.isActive,
+      criadoEm: r.createdAt,
     };
   }
 
