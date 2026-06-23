@@ -1,5 +1,6 @@
 import type { FastifyRequest, FastifyReply } from 'fastify'
 import type { Trade, TradeStatus, TradeParams, ListTradesQuery, UpdateTradeStatusBody } from './trades.schema.js'
+import type { Card } from '../cards/cards.schema.js'
 
 export interface ITradesRepository {
   findAll(status?: TradeStatus, playerId?: string): Promise<Trade[]>
@@ -26,6 +27,6 @@ export interface ITradesAdapter {
 }
 
 export interface ITradesMapper {
-  toInternal(raw: unknown): Trade
+  toInternal(raw: unknown, cartasOfertadas: Card[]): Trade
   toResponse(trade: Trade): Trade
 }

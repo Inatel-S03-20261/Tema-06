@@ -1,5 +1,6 @@
 import type { RawTrade } from './trades.adapter.js'
 import type { Trade, TradeStatus } from './trades.schema.js'
+import type { Card } from '../cards/cards.schema.js'
 
 const statusMap: Record<RawTrade['status'], TradeStatus> = {
   open: 'Aberta',
@@ -7,7 +8,7 @@ const statusMap: Record<RawTrade['status'], TradeStatus> = {
   completed: 'Finalizada',
 }
 
-export function toInternal(raw: RawTrade): Trade {
+export function toInternal(raw: RawTrade, cartasOfertadas: Card[]): Trade {
   return {
     id: raw.id,
     jogadorOrigem: { id: raw.sourcePlayerId, nome: raw.sourcePlayerName },
@@ -15,6 +16,7 @@ export function toInternal(raw: RawTrade): Trade {
       raw.targetPlayerId && raw.targetPlayerName
         ? { id: raw.targetPlayerId, nome: raw.targetPlayerName }
         : undefined,
+    cartasOfertadas,
     status: statusMap[raw.status],
     criadoEm: raw.createdAt,
   }

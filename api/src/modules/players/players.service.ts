@@ -1,10 +1,11 @@
 import type { IPlayerRepository, IPlayerService } from "./players.interface";
 import { playersRepository } from "./players.repository";
 import type { Player } from "./players.schema";
+import type { Card } from "../cards/cards.schema.js";
 import { TtlCache } from "../../shared/cache";
 
 class PlayersService implements IPlayerService {
-  private cache = new TtlCache<Player[] | Player>();
+  private cache = new TtlCache<Player[] | Player | Card[]>();
 
   constructor(private repo: IPlayerRepository) {}
 
@@ -26,6 +27,16 @@ class PlayersService implements IPlayerService {
     const player = await this.repo.findById(id);
     this.cache.set(key, player);
     return player;
+  }
+
+  async findCards(id: string): Promise<Card[]> {
+    const key = `findCards:${id}`;
+    const cached = this.cache.get(key) as Card[] | undefined;
+    if (cached) return cached;
+
+    const cards = await this.repo.findCards(id);
+    this.cache.set(key, cards);
+    return cards;
   }
 
   async create(player: Player): Promise<Player> {

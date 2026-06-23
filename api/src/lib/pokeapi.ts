@@ -1,4 +1,4 @@
-import { PokeApiPokemon, PokeApiPokemonList } from "@/shared/pokemon.schema"
+import type { PokeApiPokemon, PokeApiPokemonList } from "@/shared/pokemon.schema"
 
 const BASE_URL = process.env.POKEAPI_URL as string
 

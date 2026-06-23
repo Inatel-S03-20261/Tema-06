@@ -4,6 +4,7 @@ import { registerPlugins } from './plugins/index.js'
 import { playersRoutes } from './modules/players/players.routes.js'
 import { cardsRoutes } from './modules/cards/cards.routes.js'
 import { tradesRoutes } from './modules/trades/trades.routes.js'
+import { battlesRoutes } from './modules/battles/battles.routes.js'
 
 const app = Fastify({ logger: true }).withTypeProvider<ZodTypeProvider>()
 
@@ -15,6 +16,7 @@ await registerPlugins(app)
 await app.register(playersRoutes, { prefix: '/players' })
 await app.register(cardsRoutes,   { prefix: '/cards' })
 await app.register(tradesRoutes,  { prefix: '/trades' })
+await app.register(battlesRoutes, { prefix: '/battles' })
 // TODO: await app.register(authRoutes, { prefix: '/auth' })
 
 const port = Number(process.env.PORT) || 3000

@@ -1,39 +1,18 @@
+import { api } from "../lib/api";
 import type { Player } from "../types/Player";
-import { cartasMock } from "./cardService";
+import type { Card } from "../types/Card";
 
-export const jogadoresMock: Player[] = [
-    {
-        id: "1",
-        nome: "João",
-        nivel: "Usuário",
-        statusBanimento: false,
-    },
-    {
-        id: "2",
-        nome: "Maria",
-        nivel: "Administrador",
-        statusBanimento: false,
-    },
-    {
-        id: "3",
-        nome: "Carlos",
-        nivel: "Usuário",
-        statusBanimento: true,
-    },
-];
+export const listarJogadores = (nome?: string) =>
+    api.get<Player[]>(`/players${api.buildQuery({ nome })}`);
 
-const cartasPorJogador: Record<string, string[]> = {
-    "1": ["carta-1", "carta-3"],
-    "2": ["carta-2"],
-    "3": ["carta-4", "carta-1"],
-};
+export const buscarJogadorPorId = (id: string) =>
+    api.get<Player>(`/players/${id}`);
 
-export const buscarJogadorPorId = (id: string) => {
-    return jogadoresMock.find((jogador) => jogador.id === id);
-};
+export const buscarCartasPorJogador = (playerId: string) =>
+    api.get<Card[]>(`/players/${playerId}/cards`);
 
-export const buscarCartasPorJogador = (playerId: string) => {
-    const cardIds = cartasPorJogador[playerId] ?? [];
+export const banirJogador = (id: string, statusBanimento: boolean) =>
+    api.patch<Player>(`/players/${id}/ban`, { statusBanimento });
 
-    return cartasMock.filter((carta) => cardIds.includes(carta.id));
-};
+export const alterarNivelJogador = (id: string, nivel: Player["nivel"]) =>
+    api.patch<Player>(`/players/${id}/level`, { nivel });

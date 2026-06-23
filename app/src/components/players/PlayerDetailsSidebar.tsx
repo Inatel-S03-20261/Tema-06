@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Badge from "../ui/Badge";
 import BattleTable from "../battles/BattleTable";
@@ -10,6 +10,9 @@ import { buscarBatalhasPorJogador } from "../../services/battleService";
 import { buscarCartasPorJogador } from "../../services/playerService";
 import { buscarTrocasPorJogador } from "../../services/tradeService";
 import type { Player } from "../../types/Player";
+import type { Card } from "../../types/Card";
+import type { Trade } from "../../types/Trade";
+import type { Battle } from "../../types/Battle";
 import type { BadgeTone } from "../ui/Badge";
 
 type PlayerDetailsSidebarProps = {
@@ -45,6 +48,25 @@ const PlayerDetailsSidebar = ({
     className = "",
 }: PlayerDetailsSidebarProps) => {
     const [activeTab, setActiveTab] = useState<PlayerDetailsTab>("Perfil");
+    const [cards, setCards] = useState<Card[]>([]);
+    const [trades, setTrades] = useState<Trade[]>([]);
+    const [battles, setBattles] = useState<Battle[]>([]);
+
+    const playerId = player?.id;
+
+    useEffect(() => {
+        if (!playerId) return;
+
+        buscarCartasPorJogador(playerId)
+            .then(setCards)
+            .catch((erro) => console.error("Erro ao carregar cartas", erro));
+        buscarTrocasPorJogador(playerId)
+            .then(setTrades)
+            .catch((erro) => console.error("Erro ao carregar trocas", erro));
+        buscarBatalhasPorJogador(playerId)
+            .then(setBattles)
+            .catch((erro) => console.error("Erro ao carregar batalhas", erro));
+    }, [playerId]);
 
     if (!player) {
         return (
@@ -56,9 +78,6 @@ const PlayerDetailsSidebar = ({
         );
     }
 
-    const cards = buscarCartasPorJogador(player.id);
-    const trades = buscarTrocasPorJogador(player.id);
-    const battles = buscarBatalhasPorJogador(player.id);
     const levelBadge = getLevelBadge(player.nivel);
     const statusBadge = getStatusBadge(player.statusBanimento);
 

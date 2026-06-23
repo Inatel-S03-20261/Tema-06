@@ -28,11 +28,11 @@ export class RabbitMQConsumer implements IBrokerConsumer {
 
       try {
         await handler(ctx)
-        this.channel!.ack(msg)
+        this.channel?.ack(msg)
       } catch (err) {
         console.error(`[rabbitmq] handler error on queue=${queue}`, err)
         // nack sem requeue para nao travar a fila
-        this.channel!.nack(msg, false, false)
+        this.channel?.nack(msg, false, false)
       }
     })
   }

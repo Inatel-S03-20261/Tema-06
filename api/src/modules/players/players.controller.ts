@@ -1,7 +1,7 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { IPlayerService, IPlayersController } from "./players.interface";
 import { playersService } from "./players.service";
-import type { ListQuery, Player, PlayerParams, UpdateBanBody } from "./players.schema";
+import type { ListQuery, Player, PlayerParams, UpdateBanBody, UpdateLevelBody } from "./players.schema";
 
 class PlayersController implements IPlayersController {
   constructor(private service: IPlayerService) {}
@@ -17,11 +17,25 @@ class PlayersController implements IPlayersController {
     reply.send(player);
   }
 
+  async findCards(req: FastifyRequest<{ Params: PlayerParams }>, reply: FastifyReply): Promise<void> {
+    const cards = await this.service.findCards(req.params.id);
+    reply.send(cards);
+  }
+
   async banById(req: FastifyRequest<{ Params: PlayerParams; Body: UpdateBanBody }>, reply: FastifyReply): Promise<void> {
     const atual = await this.service.findById(req.params.id);
     const atualizado = await this.service.update(req.params.id, {
       ...atual,
       statusBanimento: req.body.statusBanimento,
+    });
+    reply.send(atualizado);
+  }
+
+  async levelById(req: FastifyRequest<{ Params: PlayerParams; Body: UpdateLevelBody }>, reply: FastifyReply): Promise<void> {
+    const atual = await this.service.findById(req.params.id);
+    const atualizado = await this.service.update(req.params.id, {
+      ...atual,
+      nivel: req.body.nivel,
     });
     reply.send(atualizado);
   }
